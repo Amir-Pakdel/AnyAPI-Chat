@@ -1,93 +1,110 @@
 # AnyAPI Chat
 
-کلاینت چت سبک و چندسکویی برای سرویس‌های مبتنی بر **New-API** (مثل AgentRouter و BluesMinds).
-آدرس سرور و کلید وب‌سرویس را وارد کنید، مدل را انتخاب کنید و چت کنید. روی **ویندوز، مک و اندروید** کار می‌کند.
+A lightweight, cross-platform chat client for services based on **New-API** (such as AgentRouter and BluesMinds).
 
-## قابلیت‌ها
-- مدیریت چند سرویس/سرور (آدرس + کلید) و سوییچ سریع بینشان
-- گرفتن خودکار لیست مدل‌ها از هر سرور
-- چت استریمی (پاسخ کلمه‌به‌کلمه) با مدل انتخابی
-- نمایش موجودی/اعتبار باقی‌مانده‌ی هر کلید
-- تاریخچه‌ی گفتگوها، ذخیره‌ی محلی روی همان دستگاه
-- قابل نصب به‌صورت اپ (PWA) روی دسکتاپ و موبایل
-- رابط فارسی و راست‌چین، تم تیره
+Enter the server URL and API key, select a model, and start chatting. Works on **Windows, macOS, and Android**.
 
-## اجرا
+## Features
 
-چون اپ از Service Worker استفاده می‌کند، باید از طریق یک سرور محلی (نه باز کردن مستقیم فایل) اجرا شود.
+* Manage multiple services/servers (URL + API key) and quickly switch between them
+* Automatically fetch the list of available models from each server
+* Streaming chat (token-by-token responses) with the selected model
+* Display the remaining balance/credits for each API key
+* Conversation history with local storage on the same device
+* Installable as a **PWA** on desktop and mobile
+* Persian, right-to-left interface with dark theme
 
-داخل پوشه‌ی پروژه این دستور را اجرا کنید:
+## Running
+
+Because the app uses a Service Worker, it must be served through a local server rather than opening the file directly.
+
+Run the following command inside the project directory:
 
 ```bash
 python3 -m http.server 8000
 ```
 
-سپس در مرورگر باز کنید: `http://localhost:8000`
+Then open `http://localhost:8000` in your browser.
 
-> اگر پایتون ندارید: `npx serve` یا هر سرور استاتیک دیگری هم کار می‌کند.
+> If you don't have Python installed, `npx serve` or any other static file server will work as well.
 
-## نصب به‌عنوان اپ
-- **ویندوز/مک (Chrome/Edge):** آیکون «Install» در نوار آدرس → نصب می‌شود مثل یک برنامه‌ی مستقل.
-- **اندروید (Chrome):** منوی مرورگر → «Add to Home screen / افزودن به صفحه اصلی».
+## Installing as an App
 
-## انتشار روی GitHub Pages
+* **Windows/macOS (Chrome/Edge):** Click the **Install** icon in the address bar. The app will be installed like a standalone application.
+* **Android (Chrome):** Open the browser menu → **Add to Home screen**.
 
-پروژه کاملاً استاتیک و فرانت‌اند است و مستقیماً روی GitHub Pages بالا می‌آید:
+## Deploying to GitHub Pages
 
-1. یک ریپازیتوری بساز و این فایل‌ها را در ریشه (root) پوش کن:
+The project is completely static and frontend-only, so it can be deployed directly to GitHub Pages:
+
+1. Create a repository and push these files to the repository root:
+
    ```bash
    git init && git add . && git commit -m "AnyAPI Chat"
    git branch -M main
    git remote add origin https://github.com/<user>/<repo>.git
    git push -u origin main
    ```
-2. در GitHub → **Settings → Pages**:
-   - اگر از اکشن استفاده می‌کنی: Source را روی **GitHub Actions** بگذار (فایل `.github/workflows/deploy.yml` خودکار دیپلوی می‌کند).
-   - یا ساده‌تر: Source را روی **Deploy from a branch** و شاخه‌ی `main` / پوشه‌ی `/ (root)` بگذار.
-3. آدرس نهایی: `https://<user>.github.io/<repo>/`
 
-> همه‌ی مسیرها نسبی‌اند، پس روی زیرمسیر ریپو هم درست کار می‌کند. فایل `.nojekyll` اضافه شده تا Jekyll دخالت نکند.
+2. In GitHub → **Settings → Pages**:
 
-## ویژگی‌های نسخه ۲.۰
-- **مارک‌داون حرفه‌ای** (marked) + **هایلایت کد** (highlight.js) + پاک‌سازی امن (DOMPurify) با fallback آفلاین
-- **System Prompt** و پارامترها برای هر گفتگو: `temperature`، `max_tokens`، `top_p` (دکمه‌ی «⚙ گفتگو»)
-- **ویرایش پیام**، **تولید مجدد** پاسخ، **حذف** تک‌پیام، کپی پیام و کپی بلوک کد
-- **ورودی تصویر** برای مدل‌های vision (دکمه‌ی 📎 یا Paste تصویر)
-- **شمارش توکن** هر پاسخ (در صورت پشتیبانی سرور)
-- **جستجو** در عنوان و متن گفتگوها
-- چیپ‌های پیشنهاد در صفحه‌ی شروع، شمارشگر نویسه، میان‌برهای کیبورد (Enter/Esc)
-- تم روشن/تاریک، صفحه‌ی تنظیمات، پشتیبان‌گیری/بازیابی JSON، خروجی Markdown هر گفتگو
-- نشانگر آفلاین و مدیریت خطا/timeout با پیام فارسی
+   * If you are using the included workflow, set the Source to **GitHub Actions**. The `.github/workflows/deploy.yml` file will deploy it automatically.
+   * Alternatively, set the Source to **Deploy from a branch**, then select the `main` branch and the `/ (root)` folder.
 
-## حل مشکل CORS / فایروال با Cloudflare Worker (رایگان)
+3. The final URL will be:
+   `https://<user>.github.io/<repo>/`
 
-فایل `cloudflare-worker.js` یک پراکسی آماده است که CORS را حل می‌کند و خود را شبیه مرورگر نشان می‌دهد تا شانس عبور از WAF بالا برود.
+> All paths are relative, so the app works correctly when hosted under a repository subpath. The `.nojekyll` file is included to prevent Jekyll from interfering.
 
-۱. وارد [dash.cloudflare.com](https://dash.cloudflare.com) شو → **Workers & Pages** → **Create** → **Create Worker**.
-۲. کد داخل `cloudflare-worker.js` را جای‌گذاری کن و **Deploy** بزن.
-۳. (اختیاری) در آرایه‌ی `ALLOW_HOSTS` هاست سرورهای خودت را اضافه کن.
-۴. آدرس Worker را بردار (مثل `https://newapi.<user>.workers.dev`).
-۵. در اپ، فیلد **CORS Proxy** را با این قالب پر کن: `https://<your-worker>.workers.dev/?url={url}`
+## Version 2.0 Features
 
-> پراکسی پیش‌فرض اپ روی `https://agentrouter.m4tinbeigi.workers.dev/?url={url}` تنظیم شده و هرکسی می‌تواند آن را در **تنظیمات → CORS Proxy پیش‌فرض** عوض کند و Worker خودش را بسازد (سورس: `cloudflare-worker.js`). با انتخاب پریست AgentRouter، این پراکسی خودکار پر می‌شود.
-> اپ خودش `{url}` را با آدرس مقصد encode‌شده جایگزین می‌کند. استریم چت حفظ می‌شود.
-> اگر AgentRouter بعد از Worker هم صفحه‌ی WAF داد، یعنی WAF حتی IP کلودفلر را هم چالش می‌کند؛ در آن صورت فقط نسخه‌ی نیتیو جواب می‌دهد.
+* **Professional Markdown rendering** (marked) + **code syntax highlighting** (highlight.js) + secure sanitization (DOMPurify), with an offline fallback
+* **System Prompt** and per-conversation parameters: `temperature`, `max_tokens`, and `top_p` (the **⚙ Conversation** button)
+* **Edit messages**, **regenerate responses**, **delete individual messages**, copy messages, and copy code blocks
+* **Image input** for vision models (📎 button or image paste)
+* **Token counting** for each response, when supported by the server
+* **Search** through conversation titles and content
+* Suggestion chips on the start screen, character counter, and keyboard shortcuts (Enter/Esc)
+* Light/dark themes, settings page, JSON backup/restore, and Markdown export for each conversation
+* Offline indicator and error/timeout handling with Persian messages
 
-## نکته‌ی مهم: CORS و فایروال سرورها
+## Solving CORS / Firewall Issues with a Cloudflare Worker (Free)
 
-برخی سرورها (مثل **AgentRouter**) پشت فایروال ضدربات (Aliyun WAF) هستند و به‌جای پاسخ API یک صفحه‌ی تأیید برمی‌گردانند؛ این سرورها از داخل مرورگر قابل استفاده نیستند (ربطی به کلید یا کد ندارد). سرورهایی مثل **BluesMinds** که CORS می‌دهند و WAF ندارند درست کار می‌کنند.
+The `cloudflare-worker.js` file is a ready-to-use proxy that solves CORS issues and makes requests appear more like they are coming from a browser, increasing the chance of getting through a WAF.
 
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com) → **Workers & Pages** → **Create** → **Create Worker**.
+2. Paste the code from `cloudflare-worker.js` and click **Deploy**.
+3. (Optional) Add your own server hosts to the `ALLOW_HOSTS` array.
+4. Copy the Worker URL, for example: `https://newapi.<user>.workers.dev`.
+5. In the app, set the **CORS Proxy** field to:
+   `https://<your-worker>.workers.dev/?url={url}`
 
-وقتی اپ داخل مرورگر اجرا می‌شود، سرور New-API باید هدرهای CORS را اجازه دهد.
-اکثر سرورهای New-API این کار را می‌کنند، اما اگر «تست اتصال» با خطای CORS شکست خورد دو راه دارید:
-1. اپ را به‌صورت نصب‌شده (PWA) اجرا کنید.
-2. یا بعداً آن را با Tauri/Capacitor به اپ نصبی تبدیل کنیم (محدودیت CORS برداشته می‌شود).
+> The app uses `https://agentrouter.m4tinbeigi.workers.dev/?url={url}` as its default proxy. Anyone can change it under **Settings → Default CORS Proxy** and create their own Worker using `cloudflare-worker.js` as the source. Selecting the AgentRouter preset automatically fills in this proxy.
+>
+> The app automatically replaces `{url}` with the encoded destination URL. Chat streaming is preserved.
+>
+> If AgentRouter still shows a WAF page after using the Worker, it means the WAF is also challenging Cloudflare IP addresses. In that case, only the native version of the app will work.
 
-## فایل‌ها
-- `index.html` — کل اپ (UI + منطق)
-- `manifest.webmanifest` — تنظیمات PWA
-- `sw.js` — Service Worker (نصب/آفلاین)
-- `icons/` — آیکون‌ها
+## Important: CORS and Server Firewalls
 
-## حریم خصوصی
-آدرس‌ها، کلیدها و تاریخچه‌ی چت فقط در `localStorage` مرورگر همان دستگاه ذخیره می‌شوند و هیچ‌جای دیگری ارسال نمی‌گردند (به‌جز مستقیماً به سرور New-API خودتان).
+Some servers (such as **AgentRouter**) are behind anti-bot firewalls (Aliyun WAF) and may return a verification page instead of an API response. These servers cannot be used directly from a browser. This is unrelated to your API key or application code.
+
+Servers such as **BluesMinds**, which support CORS and do not have a WAF, work correctly.
+
+When the app runs in a browser, the New-API server must allow CORS headers.
+
+Most New-API servers support this, but if **Test Connection** fails with a CORS error, you have two options:
+
+1. Run the app as an installed PWA.
+2. Alternatively, the app can later be packaged as a native application using Tauri/Capacitor, which removes browser CORS restrictions.
+
+## Files
+
+* `index.html` — Entire application (UI + logic)
+* `manifest.webmanifest` — PWA configuration
+* `sw.js` — Service Worker (installation/offline support)
+* `icons/` — Application icons
+
+## Privacy
+
+Server URLs, API keys, and chat history are stored only in the browser's `localStorage` on the same device and are not sent anywhere else, **except directly to your own New-API server**.
