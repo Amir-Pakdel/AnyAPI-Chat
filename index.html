@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0e1016" />
+<title>AnyAPI Chat</title>
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="icons/icon-192.png" />
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+<link id="hljsTheme" rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.5/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<style>
+  :root, [data-theme="dark"]{
+    --bg:#0e1016; --bg2:#151924; --bg3:#1c2230; --bg4:#232a3a; --line:#2a313f;
+    --txt:#e8ecf4; --muted:#8b93a6; --accent:#6c9cff; --accent2:#3a6df0; --accent-soft:#6c9cff22;
+    --green:#3ecf8e; --red:#ff6b6b; --yellow:#ffcc66; --code:#0a0d14;
+    --radius:14px; --shadow:0 10px 40px rgba(0,0,0,.45); --grad:linear-gradient(135deg,#6c9cff,#3a6df0);
+  }
+  [data-theme="light"]{
+    --bg:#f3f5fa; --bg2:#ffffff; --bg3:#eef1f7; --bg4:#e4e9f2; --line:#dbe0ea;
+    --txt:#161a24; --muted:#646c7e; --accent:#3a6df0; --accent2:#3a6df0; --accent-soft:#3a6df015;
+    --green:#179e6b; --red:#d64545; --yellow:#a9760a; --code:#f1f3f9;
+    --shadow:0 10px 40px rgba(30,45,80,.16); --grad:linear-gradient(135deg,#5b8cff,#3a6df0);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{font-family:"Vazirmatn","Segoe UI",Tahoma,system-ui,sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;overflow:hidden}
+  button{font-family:inherit;cursor:pointer}
+  input,select,textarea{font-family:inherit}
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:10px}
+  ::-webkit-scrollbar-thumb:hover{background:var(--muted)}
+  .app{display:flex;height:100dvh;width:100%}
+
+  .sidebar{width:300px;min-width:300px;background:var(--bg2);border-inline-start:1px solid var(--line);display:flex;flex-direction:column;transition:margin .25s ease}
+  .side-head{padding:15px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
+  .brand .logo{width:32px;height:32px;border-radius:9px;background:var(--grad);display:grid;place-items:center;color:#fff;font-size:17px;box-shadow:0 4px 14px var(--accent-soft)}
+  .side-section-title{font-size:11px;color:var(--muted);margin:14px 16px 6px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+  .profile-list{padding:0 10px;overflow-y:auto;flex:0 0 auto;max-height:30vh}
+  .profile{padding:10px 12px;border-radius:11px;margin-bottom:6px;background:var(--bg3);border:1px solid transparent;display:flex;flex-direction:column;gap:3px;position:relative;transition:.15s}
+  .profile:hover{border-color:var(--line)}
+  .profile.active{border-color:var(--accent);background:var(--accent-soft)}
+  .profile .pname{font-weight:700;font-size:14px;cursor:pointer;padding-inline-end:48px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .profile .purl{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+  .profile .pacts{position:absolute;top:8px;left:8px;display:flex;gap:2px}
+  .icon-btn{background:none;border:none;color:var(--muted);padding:5px;border-radius:7px;font-size:13px;line-height:1}
+  .icon-btn:hover{background:#ffffff14;color:var(--txt)}
+  .balance-chip{font-size:11px;color:var(--green);margin-top:2px;font-weight:600}
+  .btn{border:none;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:700;background:var(--accent2);color:#fff;transition:.15s}
+  .btn:hover{filter:brightness(1.08)}.btn:active{transform:translateY(1px)}
+  .btn.block{width:100%}.btn.ghost{background:var(--bg3);color:var(--txt);border:1px solid var(--line)}.btn.sm{padding:7px 11px;font-size:13px}
+  .search-wrap{padding:0 12px 6px}
+  .search-wrap input{width:100%;background:var(--bg3);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:8px 11px;font-size:13px;outline:none}
+  .conv-list{flex:1;overflow-y:auto;padding:0 10px 10px}
+  .conv{padding:9px 11px;border-radius:9px;margin-bottom:4px;font-size:13px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:6px;transition:.12s}
+  .conv:hover{background:var(--bg3);color:var(--txt)}
+  .conv.active{background:var(--bg3);color:var(--txt);box-shadow:inset 2px 0 0 var(--accent)}
+  .conv .ctitle{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+  .conv .cacts{display:flex;gap:5px;opacity:0;transition:.15s}
+  .conv:hover .cacts,.conv.active .cacts{opacity:.85}
+  .conv .ci{font-size:12px;padding:1px 3px;border-radius:5px}.conv .ci:hover{background:var(--bg);opacity:1}
+  .side-foot{padding:12px;border-top:1px solid var(--line);display:flex;gap:8px}
+
+  .main{flex:1;display:flex;flex-direction:column;min-width:0;position:relative}
+  .topbar{min-height:56px;display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line);background:var(--bg2);flex-wrap:wrap}
+  .hamb{display:none;background:none;border:none;color:var(--txt);font-size:22px}
+  .model-btn{background:var(--bg3);color:var(--txt);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:14px;max-width:300px;display:flex;align-items:center;gap:6px;overflow:hidden}
+  .model-btn span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .top-spacer{flex:1}.top-info{font-size:12px;color:var(--muted)}.top-info b{color:var(--txt)}
+  .chip-btn{background:var(--bg3);border:1px solid var(--line);color:var(--muted);border-radius:9px;padding:7px 11px;font-size:13px;display:flex;align-items:center;gap:5px}
+  .chip-btn:hover{color:var(--txt)}.chip-btn.on{border-color:var(--accent);color:var(--accent)}
+  .offline-banner{display:none;background:var(--yellow);color:#1a1f2b;font-size:12px;text-align:center;padding:5px;font-weight:700}
+  .offline-banner.show{display:block}
+
+  .chat-settings{display:none;background:var(--bg2);border-bottom:1px solid var(--line);padding:14px 18px}
+  .chat-settings.show{display:block}
+  .cs-inner{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+  .cs-inner label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px;font-weight:600}
+  .cs-inner textarea{width:100%;background:var(--bg3);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px;font-size:13px;outline:none;resize:vertical;min-height:54px}
+  .cs-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .cs-row select{flex:1;min-width:140px;background:var(--bg3);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:7px 10px;outline:none}
+  .cs-grid{display:flex;gap:16px;flex-wrap:wrap}
+  .cs-grid .f{flex:1;min-width:130px}
+  .cs-grid input[type=range]{width:100%}
+  .cs-grid .val{font-size:12px;color:var(--accent);font-weight:700}
+  .cs-grid input[type=number]{width:100%;background:var(--bg3);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:7px 10px;outline:none}
+
+  .chat{flex:1;overflow-y:auto;padding:22px 0;scroll-behavior:smooth}
+  .chat-inner{max-width:820px;margin:0 auto;padding:0 18px;display:flex;flex-direction:column;gap:20px}
+  .msg{display:flex;gap:12px;align-items:flex-start}
+  .msg .av{width:32px;height:32px;border-radius:9px;flex:0 0 32px;display:grid;place-items:center;font-size:13px;font-weight:800}
+  .msg.user .av{background:var(--bg4);color:var(--accent)}.msg.assistant .av{background:var(--grad);color:#fff}
+  .msg .col{flex:1;min-width:0;display:flex;flex-direction:column}
+  .bubble{background:var(--bg2);border:1px solid var(--line);border-radius:var(--radius);padding:12px 15px;line-height:1.9;font-size:15px;overflow-wrap:anywhere;position:relative}
+  .msg.user .bubble{background:var(--bg3)}
+  .bubble p{margin:0 0 10px}.bubble p:last-child{margin:0}
+  .bubble pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;direction:ltr;text-align:left;margin:8px 0}
+  .bubble :not(pre)>code{background:var(--code);padding:2px 6px;border-radius:6px;font-size:13px;direction:ltr;display:inline-block}
+  .bubble pre code{background:none;padding:0;font-size:13px}
+  .bubble ul,.bubble ol{margin:6px 0;padding-inline-start:22px}
+  .bubble a{color:var(--accent)}
+  .bubble table{border-collapse:collapse;margin:8px 0;display:block;overflow-x:auto}
+  .bubble th,.bubble td{border:1px solid var(--line);padding:6px 10px;font-size:14px}
+  .bubble th{background:var(--bg3)}
+  .bubble blockquote{border-inline-start:3px solid var(--accent);margin:8px 0;padding:2px 12px;color:var(--muted)}
+  .bubble img.att{max-width:240px;border-radius:10px;margin:4px 4px 4px 0;border:1px solid var(--line)}
+  .copy-code{position:absolute;top:6px;left:6px;font-size:11px;padding:3px 8px;border-radius:6px;background:var(--bg3);border:1px solid var(--line);color:var(--muted)}
+  .copy-code:hover{color:var(--txt)}
+  .reason{margin-bottom:8px;border:1px dashed var(--line);border-radius:10px;overflow:hidden}
+  .reason summary{cursor:pointer;padding:7px 12px;font-size:12px;color:var(--muted);background:var(--bg3);user-select:none}
+  .reason .rbody{padding:10px 12px;font-size:13px;color:var(--muted);line-height:1.8;white-space:pre-wrap}
+  .cursor::after{content:"▍";color:var(--accent);animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .msg-meta{display:flex;align-items:center;gap:8px;margin-top:7px;flex-wrap:wrap}
+  .msg-acts{display:flex;gap:6px;flex-wrap:wrap}
+  .msg-acts button{background:none;border:1px solid var(--line);color:var(--muted);border-radius:7px;padding:3px 9px;font-size:12px}
+  .msg-acts button:hover{color:var(--txt);background:var(--bg3)}
+  .usage{font-size:11px;color:var(--muted)}
+  .edit-area{width:100%;background:var(--bg3);border:1px solid var(--accent);color:var(--txt);border-radius:10px;padding:10px;font-size:15px;outline:none;resize:vertical}
+
+  .scroll-down{position:absolute;bottom:96px;left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:50%;font-size:16px;display:none;align-items:center;justify-content:center;box-shadow:var(--shadow);z-index:5}
+  .scroll-down.show{display:flex}
+
+  .welcome{max-width:600px;margin:7vh auto;text-align:center;color:var(--muted);padding:0 20px}
+  .welcome .big{font-size:50px;margin-bottom:8px;filter:drop-shadow(0 6px 18px var(--accent-soft))}
+  .welcome h2{color:var(--txt);font-size:23px;margin:0 0 8px}
+  .sugs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px}
+  .sug{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13px;color:var(--txt);text-align:start;cursor:pointer;transition:.15s;max-width:240px}
+  .sug:hover{border-color:var(--accent);transform:translateY(-2px)}
+
+  .composer{border-top:1px solid var(--line);background:var(--bg2);padding:12px 0}
+  .composer-inner{max-width:820px;margin:0 auto;padding:0 18px}
+  .attach-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  .att-thumb{position:relative;width:58px;height:58px;border-radius:9px;overflow:hidden;border:1px solid var(--line)}
+  .att-thumb img{width:100%;height:100%;object-fit:cover}
+  .att-file{position:relative;display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--line);border-radius:9px;padding:6px 10px;font-size:12px;max-width:180px}
+  .att-file span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .att-thumb .x,.att-file .x{background:#000a;color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;line-height:1;cursor:pointer}
+  .att-thumb .x{position:absolute;top:2px;left:2px}
+  .composer-bar{display:flex;gap:10px;align-items:flex-end}
+  .ta-wrap{flex:1;background:var(--bg3);border:1px solid var(--line);border-radius:14px;padding:6px 8px 6px 12px;display:flex;align-items:flex-end;gap:4px;transition:.15s}
+  .ta-wrap:focus-within{border-color:var(--accent)}
+  textarea#input{flex:1;background:none;border:none;color:var(--txt);resize:none;font-size:15px;line-height:1.6;max-height:200px;outline:none;padding:7px 0}
+  .ic{background:none;border:none;color:var(--muted);font-size:18px;padding:6px;border-radius:8px}
+  .ic:hover{color:var(--accent);background:var(--bg4)}
+  .ic.rec{color:var(--red)}
+  .send-btn{width:46px;height:46px;border-radius:13px;border:none;background:var(--grad);color:#fff;font-size:18px;flex:0 0 46px;box-shadow:0 4px 14px var(--accent-soft)}
+  .send-btn:disabled{opacity:.45;cursor:not-allowed}
+  .composer-hint{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--muted)}
+
+  .overlay{position:fixed;inset:0;background:#000b;backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .overlay.show{display:flex}
+  .modal{background:var(--bg2);border:1px solid var(--line);border-radius:18px;width:100%;max-width:470px;box-shadow:var(--shadow);max-height:90dvh;overflow-y:auto}
+  .modal.wide{max-width:560px}
+  .modal-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .modal-head h3{margin:0;font-size:17px}
+  .modal-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+  .field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+  .field input,.field select,.field textarea{width:100%;background:var(--bg3);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px 12px;font-size:14px;outline:none}
+  .field input:focus,.field textarea:focus{border-color:var(--accent)}
+  .modal-foot{padding:16px 20px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end}
+  .test-result{font-size:13px;padding:8px 12px;border-radius:8px;display:none}
+  .test-result.ok{display:block;background:#3ecf8e22;color:var(--green)}
+  .test-result.err{display:block;background:#ff6b6b22;color:var(--red)}
+  .muted-note{font-size:12px;color:var(--muted);line-height:1.7}
+  .set-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
+  .set-row:last-of-type{border-bottom:none}
+  .set-row .lbl{font-size:14px;font-weight:600}.set-row .sub{font-size:12px;color:var(--muted);margin-top:2px}
+  .seg{display:flex;background:var(--bg3);border:1px solid var(--line);border-radius:9px;overflow:hidden}
+  .seg button{background:none;border:none;color:var(--muted);padding:7px 14px;font-size:13px}.seg button.on{background:var(--accent2);color:#fff}
+  .set-input{width:100%;background:var(--bg3);border:1px solid var(--line);color:var(--txt);border-radius:9px;padding:9px 11px;outline:none;font-size:13px}
+
+  /* model picker */
+  .mp-search{width:100%;background:var(--bg3);border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px 12px;outline:none;font-size:14px;margin-bottom:10px}
+  .mp-list{max-height:50vh;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+  .mp-item{display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:8px;cursor:pointer;font-size:14px}
+  .mp-item:hover{background:var(--bg3)}
+  .mp-item.sel{background:var(--accent-soft);color:var(--accent)}
+  .mp-item .star{margin-inline-start:auto;color:var(--muted);font-size:14px}
+  .mp-item .star.on{color:var(--yellow)}
+  .mp-group{font-size:11px;color:var(--muted);margin:8px 4px 2px;font-weight:700}
+
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--bg4);border:1px solid var(--line);padding:10px 18px;border-radius:10px;font-size:13px;z-index:99;opacity:0;transition:.2s;pointer-events:none;box-shadow:var(--shadow)}
+  .toast.show{opacity:1}
+  .scrim{position:fixed;inset:0;background:#0008;display:none;z-index:9}.scrim.show{display:block}
+  .lock-screen{position:fixed;inset:0;background:var(--bg);z-index:120;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:20px}
+  .lock-screen.show{display:flex}
+  .lock-screen input{max-width:300px;width:100%}
+
+  .lang-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+  .lang-item{background:var(--bg2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:12px;font-size:14px;cursor:pointer;text-align:center;transition:.15s}
+  .lang-item:hover{border-color:var(--accent);background:var(--accent-soft)}
+  @media(max-width:820px){
+    .sidebar{position:fixed;inset-inline-end:0;top:0;bottom:0;z-index:20;margin-inline-end:-310px;box-shadow:var(--shadow)}
+    .sidebar.open{margin-inline-end:0}
+    .hamb{display:block}.model-btn{max-width:150px}.top-info{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="side-head">
+      <div class="brand"><span class="logo">◆</span><span>AnyAPI Chat</span></div>
+      <button class="icon-btn" id="settingsBtn" title="تنظیمات" data-i18n-title="settings" style="font-size:18px">⚙</button>
+    </div>
+    <div class="side-section-title" data-i18n="services">سرویس‌ها</div>
+    <div class="profile-list" id="profileList"></div>
+    <div style="padding:6px 16px 0"><button class="btn ghost block sm" id="addProfileBtn" data-i18n="add_service">+ افزودن سرویس</button></div>
+    <div class="side-section-title" data-i18n="conversations">گفتگوها</div>
+    <div class="search-wrap"><input id="convSearch" data-i18n-ph="conv_search_ph" placeholder="جستجو در گفتگوها…" /></div>
+    <div class="conv-list" id="convList"></div>
+    <div class="side-foot"><button class="btn block sm" id="newChatBtn" data-i18n="new_chat">+ گفتگوی جدید</button></div>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main class="main">
+    <div class="topbar">
+      <button class="hamb" id="hambBtn">☰</button>
+      <button class="model-btn" id="modelBtn" title="انتخاب مدل" data-i18n-title="select_model"><span id="modelLabel">— مدل —</span> ▾</button>
+      <button class="icon-btn" id="reloadModelsBtn" title="بارگذاری مجدد مدل‌ها" data-i18n-title="reload_models">⟳</button>
+      <button class="chip-btn" id="chatSettingsBtn" title="تنظیمات گفتگو" data-i18n-title="chat_settings">⚙ <span data-i18n="chat_settings">گفتگو</span></button>
+      <div class="top-spacer"></div>
+      <div class="top-info" id="topInfo"></div>
+    </div>
+    <div class="offline-banner" id="offlineBanner" data-i18n="offline_banner">آفلاین هستید — ارسال پیام ممکن نیست</div>
+
+    <div class="chat-settings" id="chatSettings">
+      <div class="cs-inner">
+        <div>
+          <label data-i18n="cs_system_label">System Prompt (نقش سیستمی این گفتگو)</label>
+          <textarea id="csSystem" data-i18n-ph="cs_system_ph" placeholder="مثلاً: تو یک دستیار فارسی‌زبان و دقیق هستی…"></textarea>
+          <div class="cs-row" style="margin-top:8px">
+            <select id="csPromptLib"><option value="">— کتابخانه پرامپت —</option></select>
+            <button class="btn ghost sm" id="csSavePrompt" data-i18n="save">ذخیره</button>
+            <button class="btn ghost sm" id="csDelPrompt" data-i18n="delete">حذف</button>
+          </div>
+        </div>
+        <div class="cs-grid">
+          <div class="f"><label>Temperature · <span class="val" id="csTempVal">0.7</span></label><input type="range" id="csTemp" min="0" max="2" step="0.1" value="0.7" /></div>
+          <div class="f"><label data-i18n="max_tokens_label">حداکثر توکن خروجی (۰=پیش‌فرض)</label><input type="number" id="csMax" min="0" step="64" value="0" /></div>
+          <div class="f"><label>Top P · <span class="val" id="csTopPVal">1</span></label><input type="range" id="csTopP" min="0" max="1" step="0.05" value="1" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat" id="chat">
+      <div class="welcome" id="welcome">
+        <div class="big">◆</div>
+        <h2 data-i18n="welcome_h">به AnyAPI Chat خوش آمدید</h2>
+        <p data-i18n="welcome_p">یک سرویس اضافه کنید، مدل را انتخاب کنید و گفتگو را شروع کنید.</p>
+        <div class="sugs" id="sugs"></div>
+        <button class="btn" id="welcomeAddBtn" style="margin-top:18px" data-i18n="add_service">+ افزودن سرویس</button>
+      </div>
+      <div class="chat-inner" id="chatInner" style="display:none"></div>
+    </div>
+    <button class="scroll-down" id="scrollDownBtn" title="پایین" data-i18n-title="down">↓</button>
+
+    <div class="composer">
+      <div class="composer-inner">
+        <div class="attach-row" id="attachRow" style="display:none"></div>
+        <div class="composer-bar">
+          <div class="ta-wrap">
+            <button class="ic" id="attachBtn" title="افزودن تصویر" data-i18n-title="add_image">🖼</button>
+            <button class="ic" id="fileBtn" title="افزودن فایل (متن/PDF)" data-i18n-title="add_file">📎</button>
+            <button class="ic" id="micBtn" title="ورودی صوتی" data-i18n-title="voice_input">🎙</button>
+            <textarea id="input" rows="1" data-i18n-ph="input_ph" placeholder="پیام خود را بنویسید…  (Enter ارسال، Shift+Enter خط جدید)"></textarea>
+          </div>
+          <button class="send-btn" id="sendBtn" title="ارسال" data-i18n-title="send">➤</button>
+        </div>
+        <div class="composer-hint"><span id="hint"></span><span id="charCount"></span></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<input type="file" id="imgFile" accept="image/*" multiple style="display:none" />
+<input type="file" id="docFile" accept=".txt,.md,.json,.csv,.js,.py,.html,.css,.ts,.java,.go,.rs,.pdf,text/*" multiple style="display:none" />
+<input type="file" id="importFile" accept="application/json,.json" style="display:none" />
+
+<!-- Profile Modal -->
+<div class="overlay" id="profileModal"><div class="modal">
+  <div class="modal-head"><h3 id="modalTitle" data-i18n="add_service_m">افزودن سرویس</h3><button class="icon-btn" id="closeModalBtn" style="font-size:18px">✕</button></div>
+  <div class="modal-body">
+    <div class="field"><label data-i18n="preset_label">سرویس آماده</label><select id="fPreset"><option value="" data-i18n="preset_ph">— انتخاب از لیست یا «دلخواه» —</option></select></div>
+    <div class="field"><label data-i18n="custom_name">نام دلخواه</label><input id="fName" data-i18n-ph="name_ph" placeholder="مثلاً AgentRouter" /></div>
+    <div class="field"><label data-i18n="server_url">آدرس سرور (Base URL)</label><input id="fUrl" placeholder="https://api.bluesminds.com" dir="ltr" /></div>
+    <div class="field"><label data-i18n="api_key">کلید وب‌سرویس (API Key)</label><input id="fKey" placeholder="sk-..." dir="ltr" type="password" /></div>
+    <div class="field"><label data-i18n="cors_proxy">CORS Proxy (اختیاری) <span style="color:var(--muted)" data-i18n="for_waf">— برای WAF/CORS · <a href="cloudflare-worker.js" target="_blank" style="color:var(--accent)" data-i18n="worker_src">سورس Worker</a></span></label><input id="fProxy" placeholder="https://...workers.dev/?url={url}" dir="ltr" /></div>
+    <div class="test-result" id="testResult"></div>
+    <div class="muted-note" data-i18n-html="profile_note">آدرس را بدون <code>/v1</code> وارد کنید. کلید/آدرس فقط روی همین دستگاه ذخیره می‌شوند.</div>
+  </div>
+  <div class="modal-foot"><button class="btn ghost sm" id="testBtn" data-i18n="test_conn">تست اتصال</button><button class="btn sm" id="saveProfileBtn" data-i18n="save">ذخیره</button></div>
+</div></div>
+
+<!-- Model Picker -->
+<div class="overlay" id="modelModal"><div class="modal">
+  <div class="modal-head"><h3 data-i18n="pick_model">انتخاب مدل</h3><button class="icon-btn" id="closeModelBtn" style="font-size:18px">✕</button></div>
+  <div class="modal-body">
+    <input class="mp-search" id="mpSearch" data-i18n-ph="search_model_ph" placeholder="جستجوی مدل…" dir="ltr" />
+    <div class="mp-list" id="mpList"></div>
+    <div style="display:flex;gap:8px;margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
+      <input class="mp-search" id="mpManual" data-i18n-ph="manual_model_ph" placeholder="نام مدل را دستی وارد کن (مثلاً claude-sonnet-4-5)" dir="ltr" style="margin-bottom:0" />
+      <button class="btn sm" id="mpManualBtn" data-i18n="use">استفاده</button>
+    </div>
+    <div class="muted-note" style="margin-top:6px" data-i18n="manual_note">اگر لیست مدل‌ها نیامد، نام مدل را دستی بزن و چت را امتحان کن.</div>
+  </div>
+</div></div>
+
+<!-- Settings Modal -->
+<div class="overlay" id="settingsModal"><div class="modal wide">
+  <div class="modal-head"><h3 data-i18n="settings">تنظیمات</h3><button class="icon-btn" id="closeSettingsBtn" style="font-size:18px">✕</button></div>
+  <div class="modal-body">
+    <div class="set-row">
+      <div><div class="lbl" data-i18n="theme">تم</div><div class="sub" data-i18n="theme_sub">ظاهر روشن یا تاریک</div></div>
+      <div class="seg" id="themeSeg"><button data-theme-val="dark" data-i18n="dark">تاریک</button><button data-theme-val="light" data-i18n="light">روشن</button></div>
+    </div>
+    <div class="set-row">
+      <div><div class="lbl" data-i18n="language">زبان</div><div class="sub" data-i18n="language_sub">زبان رابط کاربری اپ</div></div>
+      <select id="setLang" class="set-input" style="max-width:200px"></select>
+    </div>
+    <div class="set-row">
+      <div><div class="lbl" data-i18n="auto_title">عنوان‌گذاری هوشمند</div><div class="sub" data-i18n="auto_title_sub">ساخت خودکار عنوان گفتگو با مدل</div></div>
+      <div class="seg" id="autoTitleSeg"><button data-at="1" data-i18n="on">روشن</button><button data-at="0" data-i18n="off">خاموش</button></div>
+    </div>
+    <div class="set-row">
+      <div style="flex:1"><div class="lbl" data-i18n="tts">خواندن پاسخ (TTS)</div><div class="sub" data-i18n="tts_sub">دکمه‌ی 🔊 روی پاسخ‌ها</div></div>
+      <div class="seg" id="ttsSeg"><button data-tts="1" data-i18n="on">روشن</button><button data-tts="0" data-i18n="off">خاموش</button></div>
+    </div>
+    <div class="set-row" style="display:block">
+      <div class="lbl" data-i18n="trim_ctx">کوتاه‌سازی context</div>
+      <div class="sub" style="margin-bottom:8px" data-i18n="trim_sub">فقط N پیام آخر به سرور ارسال شود (۰ = همه)</div>
+      <input id="setTrim" type="number" min="0" step="1" class="set-input" />
+    </div>
+    <div class="set-row" style="display:block">
+      <div class="lbl" data-i18n="def_proxy">CORS Proxy پیش‌فرض</div>
+      <div class="sub" style="margin-bottom:8px" data-i18n="def_proxy_sub">برای سرورهای پشت WAF/CORS · <a href="cloudflare-worker.js" target="_blank" style="color:var(--accent)" data-i18n="worker_src">سورس Worker</a> · <code>{url}</code> جایگزین می‌شود</div>
+      <input id="setProxy" dir="ltr" placeholder="https://...workers.dev/?url={url}" class="set-input" />
+    </div>
+    <div class="set-row" style="display:block">
+      <div class="lbl" data-i18n="worker_token">توکن امنیتی Worker</div>
+      <div class="sub" style="margin-bottom:8px" data-i18n="worker_token_sub">اگر در Worker تنظیم کردی، اینجا هم بگذار تا فقط این اپ بتواند از Worker استفاده کند</div>
+      <input id="setProxyToken" dir="ltr" data-i18n-ph="secret_ph" placeholder="یک رشته‌ی محرمانه" class="set-input" />
+    </div>
+    <div class="set-row" style="display:block">
+      <div class="lbl" data-i18n="security_lock">قفل امنیتی (رمزگذاری کلیدها)</div>
+      <div class="sub" style="margin-bottom:8px" data-i18n="security_lock_sub">کلیدهای API با رمز عبور رمزنگاری می‌شوند (AES-GCM) و هنگام باز کردن اپ رمز خواسته می‌شود</div>
+      <div style="display:flex;gap:8px"><button class="btn ghost sm" id="lockBtn" data-i18n="enable_lock">فعال‌سازی قفل</button><button class="btn ghost sm" id="unlockRemoveBtn" data-i18n="remove_lock">حذف قفل</button></div>
+    </div>
+    <div class="set-row" style="display:block">
+      <div class="lbl" data-i18n="gist_sync">همگام‌سازی با GitHub Gist</div>
+      <div class="sub" style="margin-bottom:8px" data-i18n="gist_sync_sub">بکاپ را در یک Gist خصوصی ذخیره/بازیابی کن (نیاز به Personal Access Token با اسکوپ gist)</div>
+      <input id="setGistToken" dir="ltr" placeholder="GitHub token (ghp_...)" class="set-input" style="margin-bottom:6px" />
+      <input id="setGistId" dir="ltr" data-i18n-ph="gist_id_ph" placeholder="Gist ID (خالی = ساخت جدید هنگام ارسال)" class="set-input" style="margin-bottom:8px" />
+      <div style="display:flex;gap:8px"><button class="btn ghost sm" id="gistPush" data-i18n="gist_push">⬆ ارسال</button><button class="btn ghost sm" id="gistPull" data-i18n="gist_pull">⬇ دریافت</button></div>
+    </div>
+    <div class="set-row">
+      <div><div class="lbl" data-i18n="backup">پشتیبان‌گیری</div><div class="sub" data-i18n="backup_sub">ذخیره‌ی همه‌چیز در یک فایل</div></div>
+      <button class="btn ghost sm" id="exportAllBtn" data-i18n="dl_backup">دانلود بکاپ</button>
+    </div>
+    <div class="set-row">
+      <div><div class="lbl" data-i18n="restore">بازیابی</div><div class="sub" data-i18n="restore_sub">وارد کردن فایل بکاپ</div></div>
+      <button class="btn ghost sm" id="importAllBtn" data-i18n="pick_file">انتخاب فایل</button>
+    </div>
+    <div class="set-row">
+      <div><div class="lbl" style="color:var(--red)" data-i18n="clear_all">پاک کردن همه</div><div class="sub" data-i18n="clear_all_sub">حذف کامل داده‌ها</div></div>
+      <button class="btn ghost sm" id="clearAllBtn" style="color:var(--red)" data-i18n="clear">پاک کن</button>
+    </div>
+    <div class="muted-note" id="versionNote">نسخه ۳.۰ · همه‌ی داده‌ها روی همین دستگاه ذخیره می‌شوند.</div>
+  </div>
+</div></div>
+
+<!-- First-time language picker -->
+<div class="overlay" id="langModal"><div class="modal" style="max-width:560px">
+  <div class="modal-head"><h3>🌐 Choose your language · زبان خود را انتخاب کنید</h3></div>
+  <div class="modal-body"><div class="lang-grid" id="langGrid"></div></div>
+</div></div>
+
+<div class="lock-screen" id="lockScreen">
+  <div style="font-size:40px">🔒</div>
+  <div style="font-weight:700" data-i18n="lock_prompt">برای باز کردن اپ رمز عبور را وارد کنید</div>
+  <input class="set-input" id="lockInput" type="password" data-i18n-ph="pass_ph" placeholder="رمز عبور" dir="ltr" />
+  <div style="display:flex;gap:8px"><button class="btn" id="lockUnlockBtn" data-i18n="unlock">باز کردن</button><button class="btn ghost" id="lockResetBtn" data-i18n="forgot_reset">فراموشی رمز / حذف داده</button></div>
+  <div id="lockErr" style="color:var(--red);font-size:13px"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   AnyAPI Chat v3 — frontend-only client for New-API servers
+   ============================================================ */
+const LS={profiles:'na_profiles',vault:'na_vault',active:'na_active_profile',convs:'na_convs',model:'na_model_',theme:'na_theme',settings:'na_settings'};
+const APP_VERSION='3.0';
+const $=s=>document.querySelector(s);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function loadJSON(k,def){ try{return JSON.parse(localStorage.getItem(k)) ?? def}catch{return def} }
+function setJSON(k,v){ localStorage.setItem(k,JSON.stringify(v)) }
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2600) }
+function timeoutSignal(ms){ const c=new AbortController(); setTimeout(()=>c.abort(new DOMException('timeout','AbortError')),ms); return c.signal }
+function esc(s){ return (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])) }
+function fmtTime(ts){ if(!ts) return ''; const d=new Date(ts); const loc=(LANGUAGES.find(x=>x.code===state.settings.lang)||LANGUAGES[0]).loc; return d.toLocaleTimeString(loc,{hour:'2-digit',minute:'2-digit'}) }
+
+const DEFAULT_PROXY='https://agentrouter.m4tinbeigi.workers.dev/?url={url}';
+const PRESETS=[
+  { name:'AgentRouter', url:'https://agentrouter.org', useProxy:true, note:'preset_agentrouter_note' },
+  { name:'BluesMinds',  url:'https://api.bluesminds.com', note:'' },
+  { name:'GoRouter',    url:'https://gorouter.app', note:'' },
+  { name:'TabiToken',   url:'https://tabitoken.com', note:'' }
+];
+/* ---------- i18n (multi-language) ---------- */
+const LANGUAGES=[
+  {code:'fa',name:'فارسی',dir:'rtl',loc:'fa-IR'},
+  {code:'en',name:'English',dir:'ltr',loc:'en-US'},
+  {code:'es',name:'Español',dir:'ltr',loc:'es-ES'},
+  {code:'fr',name:'Français',dir:'ltr',loc:'fr-FR'},
+  {code:'de',name:'Deutsch',dir:'ltr',loc:'de-DE'},
+  {code:'pt',name:'Português',dir:'ltr',loc:'pt-BR'},
+  {code:'ru',name:'Русский',dir:'ltr',loc:'ru-RU'},
+  {code:'ar',name:'العربية',dir:'rtl',loc:'ar-EG'},
+  {code:'hi',name:'हिन्दी',dir:'ltr',loc:'hi-IN'},
+  {code:'zh',name:'中文（简体）',dir:'ltr',loc:'zh-CN'},
+  {code:'ja',name:'日本語',dir:'ltr',loc:'ja-JP'},
+  {code:'bn',name:'বাংলা',dir:'ltr',loc:'bn-BD'},
+  {code:'tr',name:'Türkçe',dir:'ltr',loc:'tr-TR'},
+  {code:'ur',name:'اردو',dir:'rtl',loc:'ur-PK'},
+  {code:'ko',name:'한국어',dir:'ltr',loc:'ko-KR'},
+  {code:'it',name:'Italiano',dir:'ltr',loc:'it-IT'}
+];
+const I18N={
+fa:{
+  settings:'تنظیمات',services:'سرویس‌ها',add_service:'افزودن سرویس',conversations:'گفتگوها',
+  conv_search_ph:'جستجو در گفتگوها…',new_chat:'گفتگوی جدید',select_model:'انتخاب مدل',model_placeholder:'— مدل —',
+  reload_models:'بارگذاری مجدد مدل‌ها',chat_settings:'گفتگو',offline_banner:'آفلاین هستید — ارسال پیام ممکن نیست',
+  cs_system_label:'System Prompt (نقش سیستمی این گفتگو)',cs_system_ph:'مثلاً: تو یک دستیار دقیق و مفید هستی…',
+  prompt_lib:'— کتابخانه پرامپت —',save:'ذخیره',delete:'حذف',max_tokens_label:'حداکثر توکن خروجی (۰=پیش‌فرض)',
+  welcome_h:'به AnyAPI Chat خوش آمدید',welcome_p:'یک سرویس اضافه کنید، مدل را انتخاب کنید و گفتگو را شروع کنید.',
+  down:'پایین',add_image:'افزودن تصویر',add_file:'افزودن فایل (متن/PDF)',voice_input:'ورودی صوتی',
+  input_ph:'پیام خود را بنویسید…  (Enter ارسال، Shift+Enter خط جدید)',send:'ارسال',stop:'توقف',
+  add_service_m:'افزودن سرویس',edit_service:'ویرایش سرویس',service:'سرویس',
+  preset_label:'سرویس آماده',preset_ph:'— انتخاب از لیست یا «دلخواه» —',custom_name:'نام دلخواه',
+  name_ph:'مثلاً AgentRouter',server_url:'آدرس سرور (Base URL)',api_key:'کلید وب‌سرویس (API Key)',
+  cors_proxy:'CORS Proxy (اختیاری)',for_waf:'— برای WAF/CORS ·',worker_src:'سورس Worker',
+  profile_note:'آدرس را بدون <code>/v1</code> وارد کنید. کلید/آدرس فقط روی همین دستگاه ذخیره می‌شوند.',
+  test_conn:'تست اتصال',pick_model:'انتخاب مدل',search_model_ph:'جستجوی مدل…',
+  manual_model_ph:'نام مدل را دستی وارد کن (مثلاً claude-sonnet-4-5)',use:'استفاده',
+  manual_note:'اگر لیست مدل‌ها نیامد، نام مدل را دستی بزن و چت را امتحان کن.',
+  theme:'تم',theme_sub:'ظاهر روشن یا تاریک',dark:'تاریک',light:'روشن',
+  auto_title:'عنوان‌گذاری هوشمند',auto_title_sub:'ساخت خودکار عنوان گفتگو با مدل',on:'روشن',off:'خاموش',
+  tts:'خواندن پاسخ (TTS)',tts_sub:'دکمه‌ی 🔊 روی پاسخ‌ها',trim_ctx:'کوتاه‌سازی context',
+  trim_sub:'فقط N پیام آخر به سرور ارسال شود (۰ = همه)',
+  def_proxy:'CORS Proxy پیش‌فرض',def_proxy_sub:'برای سرورهای پشت WAF/CORS · <code>{url}</code> جایگزین می‌شود',
+  worker_token:'توکن امنیتی Worker',worker_token_sub:'اگر در Worker تنظیم کردی، اینجا هم بگذار تا فقط این اپ بتواند از Worker استفاده کند',
+  secret_ph:'یک رشته‌ی محرمانه',security_lock:'قفل امنیتی (رمزگذاری کلیدها)',
+  security_lock_sub:'کلیدهای API با رمز عبور رمزنگاری می‌شوند (AES-GCM) و هنگام باز کردن اپ رمز خواسته می‌شود',
+  enable_lock:'فعال‌سازی قفل',remove_lock:'حذف قفل',gist_sync:'همگام‌سازی با GitHub Gist',
+  gist_sync_sub:'بکاپ را در یک Gist خصوصی ذخیره/بازیابی کن (نیاز به Personal Access Token با اسکوپ gist)',
+  gist_id_ph:'Gist ID (خالی = ساخت جدید هنگام ارسال)',gist_push:'⬆ ارسال',gist_pull:'⬇ دریافت',
+  backup:'پشتیبان‌گیری',backup_sub:'ذخیره‌ی همه‌چیز در یک فایل',dl_backup:'دانلود بکاپ',
+  restore:'بازیابی',restore_sub:'وارد کردن فایل بکاپ',pick_file:'انتخاب فایل',
+  clear_all:'پاک کردن همه',clear_all_sub:'حذف کامل داده‌ها',clear:'پاک کن',
+  version_note:'نسخه {0} · همه‌ی داده‌ها روی همین دستگاه ذخیره می‌شوند.',
+  lock_prompt:'برای باز کردن اپ رمز عبور را وارد کنید',pass_ph:'رمز عبور',unlock:'باز کردن',
+  forgot_reset:'فراموشی رمز / حذف داده',language:'زبان',language_sub:'زبان رابط کاربری اپ',
+  no_service_yet:'هنوز سرویسی اضافه نشده.',no_results:'نتیجه‌ای نبود.',no_convs:'گفتگویی وجود ندارد.',
+  new_conv:'گفتگوی جدید',rename:'تغییر نام',export_md:'خروجی Markdown',
+  send_first:'پیامی بفرستید تا گفتگو شروع شود.',reasoning:'🧠 استدلال مدل',
+  edit:'ویرایش',copy:'کپی',regenerate:'تولید مجدد',you:'شما',copied:'کپی شد',
+  tts_unsupported:'TTS پشتیبانی نمی‌شود',mic_unsupported:'ورودی صوتی پشتیبانی نمی‌شود',select_service:'یک سرویس انتخاب کنید',loading_models:'در حال بارگذاری مدل‌ها…',
+  favorites:'★ مورد علاقه',recent:'اخیر',all_n:'همه ({0})',balance_of:'موجودی: {0} از {1}',balance:'موجودی',
+  custom_addr:'دلخواه (آدرس دستی)',url_key_required:'آدرس و کلید الزامی است',saved:'ذخیره شد',
+  del_profile_confirm:'این سرویس و گفتگوهایش حذف شوند؟',
+  url_key_needed:'آدرس و کلید را وارد کنید',testing:'در حال تست…',conn_ok:'اتصال موفق — {0} مدل یافت شد',
+  failed:'ناموفق: ',models_error:'خطا در مدل‌ها: ',select_service_first:'ابتدا یک سرویس انتخاب کنید',
+  rename_prompt:'نام جدید گفتگو:',no_svc_model:'سرویس یا مدل انتخاب نشده',
+  error_prefix:'⚠️ خطا: ',title_req:'برای این درخواست یک عنوان کوتاه ۳ تا ۵ کلمه‌ای {0} بده، فقط عنوان بدون نقل‌قول:\n\n',
+  offline_msg:'اتصال اینترنت قطع است',file_error:'خطا در فایل: ',write_model_name:'نام مدل را بنویس',
+  models_updated:'مدل‌ها بروزرسانی شد',wrong_pass:'رمز اشتباه است',lock_enabled:'قفل فعال شد',
+  no_lock_active:'قفل فعال نیست',lock_removed:'قفل حذف شد',gist_token_needed:'توکن GitHub را وارد کنید',
+  gist_saved:'در Gist ذخیره شد',gist_error:'خطای Gist: ',gist_token_id:'توکن و Gist ID لازم است',
+  gist_replace:'داده‌های فعلی با محتوای Gist جایگزین شوند؟',gist_missing:'فایل بکاپ در Gist نیست',
+  gist_restored:'از Gist بازیابی شد',backup_dl:'بکاپ دانلود شد',replace_data:'داده‌های فعلی جایگزین شوند؟',
+  restored:'بازیابی شد',invalid_file:'فایل نامعتبر است',clear_confirm:'همه‌ی داده‌ها پاک شوند؟ برگشت‌پذیر نیست.',
+  cleared:'همه‌چیز پاک شد',enc_confirm:'داده‌های رمزگذاری‌شده حذف شوند؟',
+  set_pass:'یک رمز عبور برای قفل تعیین کنید (در صورت فراموشی، کلیدها از دست می‌روند):',
+  hint:'Enter ارسال · Shift+Enter خط جدید',timeout_err:'پاسخ نداد (timeout)',
+  net_err:'عدم دسترسی به سرور (شبکه/CORS)',invalid_key:' — کلید نامعتبر',wrong_worker_tok:' — توکن Worker اشتباه؟',
+  waf_page:'سرور صفحه‌ی فایروال (WAF) برگرداند، نه پاسخ API',
+  bad_response:'پاسخ نامعتبر/خالی از سرور',prompt_name:'نام این پرامپت:',
+  prompt_empty:'متن System خالی است',select_prompt:'یک پرامپت را انتخاب کنید',prompt_deleted:'حذف شد',
+  tokens:'توکن',chars_n:'{0} نویسه',user_label:'کاربر',assistant_label:'دستیار',
+  preset_agentrouter_note:'این سرور پشت فایروال WAF است؛ از طریق CORS Proxy رد می‌شود (خودکار پر شد). کلید: agentrouter.org/console/token',
+  sug1:'یک تابع پایتون برای مرتب‌سازی سریع بنویس',sug2:'تفاوت TCP و UDP را ساده توضیح بده',
+  sug3:'یک ایمیل حرفه‌ای برای پیگیری جلسه بنویس',sug4:'۵ ایده برای پست اینستاگرام یک کافه بده'
+},
+en:{
+  settings:'Settings',services:'Services',add_service:'Add service',conversations:'Conversations',
+  conv_search_ph:'Search conversations…',new_chat:'New chat',select_model:'Select model',model_placeholder:'— Model —',
+  reload_models:'Reload models',chat_settings:'Chat settings',offline_banner:"You're offline — sending is unavailable",
+  cs_system_label:'System prompt (role for this chat)',cs_system_ph:'e.g. You are a precise and helpful assistant…',
+  prompt_lib:'— Prompt library —',save:'Save',delete:'Delete',max_tokens_label:'Max output tokens (0 = default)',
+  welcome_h:'Welcome to AnyAPI Chat',welcome_p:'Add a service, pick a model and start chatting.',
+  down:'Down',add_image:'Add image',add_file:'Add file (text/PDF)',voice_input:'Voice input',
+  input_ph:'Type your message… (Enter to send, Shift+Enter new line)',send:'Send',stop:'Stop',
+  add_service_m:'Add service',edit_service:'Edit service',service:'Service',
+  preset_label:'Ready service',preset_ph:'— Choose from list or “Custom” —',custom_name:'Custom name',
+  name_ph:'e.g. AgentRouter',server_url:'Server address (Base URL)',api_key:'Web service key (API Key)',
+  cors_proxy:'CORS Proxy (optional)',for_waf:'— for WAF/CORS ·',worker_src:'Worker source',
+  profile_note:'Enter the address without <code>/v1</code>. Key/address are stored only on this device.',
+  test_conn:'Test connection',pick_model:'Select model',search_model_ph:'Search model…',
+  manual_model_ph:'Enter model name manually (e.g. claude-sonnet-4-5)',use:'Use',
+  manual_note:"If the model list doesn't load, type the model name manually and try chatting.",
+  theme:'Theme',theme_sub:'Light or dark appearance',dark:'Dark',light:'Light',
+  auto_title:'Smart titles',auto_title_sub:'Auto-generate conversation title with the model',on:'On',off:'Off',
+  tts:'Read responses (TTS)',tts_sub:'🔊 button on responses',trim_ctx:'Context shortening',
+  trim_sub:'Only send the last N messages to the server (0 = all)',
+  def_proxy:'Default CORS proxy',def_proxy_sub:'For servers behind WAF/CORS · <code>{url}</code> is replaced',
+  worker_token:'Worker security token',worker_token_sub:'If set in your Worker, set it here so only this app can use it',
+  secret_ph:'A secret string',security_lock:'Security lock (encrypts keys)',
+  security_lock_sub:'API keys are encrypted (AES-GCM) with a password and prompted when opening the app',
+  enable_lock:'Enable lock',remove_lock:'Remove lock',gist_sync:'GitHub Gist sync',
+  gist_sync_sub:'Store/restore backup in a private Gist (needs a Personal Access Token with gist scope)',
+  gist_id_ph:'Gist ID (empty = create new on upload)',gist_push:'⬆ Upload',gist_pull:'⬇ Fetch',
+  backup:'Backup',backup_sub:'Save everything to one file',dl_backup:'Download backup',
+  restore:'Restore',restore_sub:'Import a backup file',pick_file:'Choose file',
+  clear_all:'Erase everything',clear_all_sub:'Permanently delete all data',clear:'Erase',
+  version_note:'Version {0} · all data is stored on this device only',
+  lock_prompt:'Enter the password to unlock the app',pass_ph:'Password',unlock:'Unlock',
+  forgot_reset:'Forgot password / erase data',language:'Language',language_sub:'App UI language',
+  no_service_yet:'No service added yet.',no_results:'No results.',no_convs:'No conversations yet.',
+  new_conv:'New conversation',rename:'Rename',export_md:'Export Markdown',
+  send_first:'Send a message to start the conversation.',reasoning:'🧠 Model reasoning',
+  edit:'Edit',copy:'Copy',regenerate:'Regenerate',you:'You',copied:'Copied',
+  tts_unsupported:'TTS not supported',mic_unsupported:'Voice input not supported',select_service:'Select a service',loading_models:'Loading models…',
+  favorites:'★ Favorites',recent:'Recent',all_n:'All ({0})',balance_of:'Balance: {0} of {1}',balance:'Balance',
+  custom_addr:'Custom (manual address)',url_key_required:'URL and key are required',saved:'Saved',
+  del_profile_confirm:'Delete this service and its conversations?',
+  url_key_needed:'Enter the URL and key',testing:'Testing…',conn_ok:'Connection OK — {0} models found',
+  failed:'Failed: ',models_error:'Models error: ',select_service_first:'First select a service',
+  rename_prompt:'New conversation name:',no_svc_model:'No service or model selected',
+  error_prefix:'⚠️ Error: ',title_req:'Give a short 3-5 word {0} title for this request, only the title, no quotes:\n\n',
+  offline_msg:'Internet connection lost',file_error:'File error: ',write_model_name:'Type a model name',
+  models_updated:'Models updated',wrong_pass:'Wrong password',lock_enabled:'Lock enabled',
+  no_lock_active:'Lock is not active',lock_removed:'Lock removed',gist_token_needed:'Enter your GitHub token',
+  gist_saved:'Saved to Gist',gist_error:'Gist error: ',gist_token_id:'Token and Gist ID are required',
+  gist_replace:'Replace current data with the Gist content?',gist_missing:'Backup file not found in the Gist',
+  gist_restored:'Restored from Gist',backup_dl:'Backup downloaded',replace_data:'Replace current data?',
+  restored:'Restored',invalid_file:'Invalid file',clear_confirm:'Delete all data? This cannot be undone.',
+  cleared:'Everything erased',enc_confirm:'Delete encrypted data?',
+  set_pass:'Choose a password for the lock (if forgotten, keys are lost):',
+  hint:'Enter to send · Shift+Enter new line',timeout_err:'No response (timeout)',
+  net_err:'Cannot reach the server (network/CORS)',invalid_key:' — invalid key',wrong_worker_tok:' — wrong Worker token?',
+  waf_page:'The server returned a firewall (WAF) page, not an API response',
+  bad_response:'Invalid/empty response from the server',prompt_name:'Name this prompt:',
+  prompt_empty:'System text is empty',select_prompt:'Select a prompt',prompt_deleted:'Deleted',
+  tokens:'tokens',chars_n:'{0} chars',user_label:'User',assistant_label:'Assistant',
+  preset_agentrouter_note:'This server is behind a WAF firewall; it goes through the CORS proxy (auto-filled). Key: agentrouter.org/console/token',
+  sug1:'Write a Python function for fast sorting',sug2:'Explain the difference between TCP and UDP simply',
+  sug3:'Write a professional follow-up email for a meeting',sug4:'Give 5 Instagram post ideas for a café'
+},
+es:{
+  settings:'Ajustes',services:'Servicios',add_service:'Agregar servicio',conversations:'Conversaciones',
+  conv_search_ph:'Buscar conversaciones…',new_chat:'Nuevo chat',select_model:'Seleccionar modelo',model_placeholder:'— Modelo —',
+  reload_models:'Recargar modelos',chat_settings:'Ajustes del chat',offline_banner:'Estás sin conexión — no se puede enviar',
+  cs_system_label:'Prompt del sistema (rol de este chat)',cs_system_ph:'Ej.: eres un asistente preciso y útil…',
+  prompt_lib:'— Biblioteca de prompts —',save:'Guardar',delete:'Eliminar',max_tokens_label:'Máx. tokens de salida (0 = predeterminado)',
+  welcome_h:'Bienvenido a AnyAPI Chat',welcome_p:'Agrega un servicio, elige un modelo y empieza a chatear.',
+  down:'Abajo',add_image:'Agregar imagen',add_file:'Agregar archivo (texto/PDF)',voice_input:'Entrada de voz',
+  input_ph:'Escribe tu mensaje… (Enter para enviar, Shift+Enter nueva línea)',send:'Enviar',stop:'Detener',
+  add_service_m:'Agregar servicio',edit_service:'Editar servicio',service:'Servicio',
+  preset_label:'Servicio listo',preset_ph:'— Elige de la lista o «Personalizado» —',custom_name:'Nombre personalizado',
+  name_ph:'p. ej. AgentRouter',server_url:'Dirección del servidor (URL base)',api_key:'Clave del servicio (API Key)',
+  cors_proxy:'Proxy CORS (opcional)',for_waf:'— para WAF/CORS ·',worker_src:'Código del Worker',
+  profile_note:'Introduce la dirección sin <code>/v1</code>. La clave/dirección solo se guardan en este dispositivo.',
+  test_conn:'Probar conexión',pick_model:'Seleccionar modelo',search_model_ph:'Buscar modelo…',
+  manual_model_ph:'Escribe el nombre del modelo manualmente (p. ej. claude-sonnet-4-5)',use:'Usar',
+  manual_note:'Si la lista de modelos no carga, escribe el nombre del modelo manualmente e intenta chatear.',
+  theme:'Tema',theme_sub:'Apariencia clara u oscura',dark:'Oscuro',light:'Claro',
+  auto_title:'Títulos inteligentes',auto_title_sub:'Generar título de la conversación con el modelo',on:'Sí',off:'No',
+  tts:'Leer respuestas (TTS)',tts_sub:'Botón 🔊 en las respuestas',trim_ctx:'Acortar contexto',
+  trim_sub:'Enviar solo los últimos N mensajes al servidor (0 = todos)',
+  def_proxy:'Proxy CORS predeterminado',def_proxy_sub:'Para servidores tras WAF/CORS · <code>{url}</code> se reemplaza',
+  worker_token:'Token de seguridad del Worker',worker_token_sub:'Si lo configuraste en tu Worker, ponlo aquí para que solo esta app pueda usarlo',
+  secret_ph:'Una cadena secreta',security_lock:'Bloqueo de seguridad (cifra las claves)',
+  security_lock_sub:'Las claves API se cifran (AES-GCM) con una contraseña y se piden al abrir la app',
+  enable_lock:'Activar bloqueo',remove_lock:'Quitar bloqueo',gist_sync:'Sincronización con GitHub Gist',
+  gist_sync_sub:'Guarda/restaura la copia en un Gist privado (requiere un Personal Access Token con ámbito gist)',
+  gist_id_ph:'ID del Gist (vacío = crear nuevo al subir)',gist_push:'⬆ Subir',gist_pull:'⬇ Descargar',
+  backup:'Copia de seguridad',backup_sub:'Guardar todo en un archivo',dl_backup:'Descargar copia',
+  restore:'Restaurar',restore_sub:'Importar un archivo de copia',pick_file:'Elegir archivo',
+  clear_all:'Borrar todo',clear_all_sub:'Eliminar permanentemente todos los datos',clear:'Borrar',
+  version_note:'Versión {0} · todos los datos se guardan solo en este dispositivo',
+  lock_prompt:'Introduce la contraseña para desbloquear la app',pass_ph:'Contraseña',unlock:'Desbloquear',
+  forgot_reset:'Olvidé la contraseña / borrar datos',language:'Idioma',language_sub:'Idioma de la interfaz',
+  no_service_yet:'Aún no se agregó ningún servicio.',no_results:'Sin resultados.',no_convs:'No hay conversaciones.',
+  new_conv:'Nueva conversación',rename:'Renombrar',export_md:'Exportar Markdown',
+  send_first:'Envía un mensaje para iniciar la conversación.',reasoning:'🧠 Razonamiento del modelo',
+  edit:'Editar',copy:'Copiar',regenerate:'Regenerar',you:'Tú',copied:'Copiado',
+  tts_unsupported:'TTS no compatible',mic_unsupported:'Entrada de voz no compatible',select_service:'Selecciona un servicio',loading_models:'Cargando modelos…',
+  favorites:'★ Favoritos',recent:'Recientes',all_n:'Todos ({0})',balance_of:'Saldo: {0} de {1}',balance:'Saldo',
+  custom_addr:'Personalizado (dirección manual)',url_key_required:'La URL y la clave son obligatorias',saved:'Guardado',
+  del_profile_confirm:'¿Eliminar este servicio y sus conversaciones?',
+  url_key_needed:'Introduce la URL y la clave',testing:'Probando…',conn_ok:'Conexión correcta — {0} modelos encontrados',
+  failed:'Falló: ',models_error:'Error de modelos: ',select_service_first:'Primero selecciona un servicio',
+  rename_prompt:'Nuevo nombre de la conversación:',no_svc_model:'No hay servicio o modelo seleccionado',
+  error_prefix:'⚠️ Error: ',title_req:'Da un título breve de 3 a 5 palabras en {0} para esta solicitud, solo el título, sin comillas:\n\n',
+  offline_msg:'Se perdió la conexión a Internet',file_error:'Error de archivo: ',write_model_name:'Escribe un nombre de modelo',
+  models_updated:'Modelos actualizados',wrong_pass:'Contraseña incorrecta',lock_enabled:'Bloqueo activado',
+  no_lock_active:'El bloqueo no está activo',lock_removed:'Bloqueo eliminado',gist_token_needed:'Introduce tu token de GitHub',
+  gist_saved:'Guardado en Gist',gist_error:'Error de Gist: ',gist_token_id:'Se requieren token e ID de Gist',
+  gist_replace:'¿Reemplazar los datos actuales con el contenido del Gist?',gist_missing:'No se encontró el archivo de copia en el Gist',
+  gist_restored:'Restaurado desde Gist',backup_dl:'Copia descargada',replace_data:'¿Reemplazar los datos actuales?',
+  restored:'Restaurado',invalid_file:'Archivo no válido',clear_confirm:'¿Borrar todos los datos? Esto no se puede deshacer.',
+  cleared:'Todo borrado',enc_confirm:'¿Eliminar los datos cifrados?',
+  set_pass:'Elige una contraseña para el bloqueo (si la olvidas, se pierden las claves):',
+  hint:'Enter para enviar · Shift+Enter nueva línea',timeout_err:'Sin respuesta (timeout)',
+  net_err:'No se pudo acceder al servidor (red/CORS)',invalid_key:' — clave no válida',wrong_worker_tok:' — ¿token del Worker incorrecto?',
+  waf_page:'El servidor devolvió una página de firewall (WAF), no una respuesta API',
+  bad_response:'Respuesta no válida/vacía del servidor',prompt_name:'Nombre de este prompt:',
+  prompt_empty:'El texto del sistema está vacío',select_prompt:'Selecciona un prompt',prompt_deleted:'Eliminado',
+  tokens:'tokens',chars_n:'{0} caracteres',user_label:'Usuario',assistant_label:'Asistente',
+  preset_agentrouter_note:'Este servidor está tras un firewall WAF; pasa por el proxy CORS (rellenado automáticamente). Clave: agentrouter.org/console/token',
+  sug1:'Escribe una función Python para ordenar rápido',sug2:'Explica la diferencia entre TCP y UDP de forma simple',
+  sug3:'Escribe un correo profesional de seguimiento de una reunión',sug4:'Da 5 ideas de publicaciones de Instagram para una cafetería'
+},
+fr:{
+  settings:'Paramètres',services:'Services',add_service:'Ajouter un service',conversations:'Conversations',
+  conv_search_ph:'Rechercher des conversations…',new_chat:'Nouvelle discussion',select_model:'Choisir un modèle',model_placeholder:'— Modèle —',
+  reload_models:'Recharger les modèles',chat_settings:'Paramètres du chat',offline_banner:'Vous êtes hors ligne — envoi impossible',
+  cs_system_label:'Prompt système (rôle de cette conversation)',cs_system_ph:'Ex. : vous êtes un assistant précis et utile…',
+  prompt_lib:'— Bibliothèque de prompts —',save:'Enregistrer',delete:'Supprimer',max_tokens_label:'Tokens de sortie max (0 = défaut)',
+  welcome_h:'Bienvenue sur AnyAPI Chat',welcome_p:'Ajoutez un service, choisissez un modèle et commencez à discuter.',
+  down:'Bas',add_image:'Ajouter une image',add_file:'Ajouter un fichier (texte/PDF)',voice_input:'Entrée vocale',
+  input_ph:'Écrivez votre message… (Entrée pour envoyer, Maj+Entrée nouvelle ligne)',send:'Envoyer',stop:'Arrêter',
+  add_service_m:'Ajouter un service',edit_service:'Modifier le service',service:'Service',
+  preset_label:'Service prêt',preset_ph:'— Choisir dans la liste ou « Personnalisé » —',custom_name:'Nom personnalisé',
+  name_ph:'ex. AgentRouter',server_url:'Adresse du serveur (URL de base)',api_key:'Clé du service (API Key)',
+  cors_proxy:'Proxy CORS (facultatif)',for_waf:'— pour WAF/CORS ·',worker_src:'Code du Worker',
+  profile_note:'Saisissez l’adresse sans <code>/v1</code>. La clé/l’adresse ne sont stockées que sur cet appareil.',
+  test_conn:'Tester la connexion',pick_model:'Choisir un modèle',search_model_ph:'Rechercher un modèle…',
+  manual_model_ph:'Saisir le nom du modèle manuellement (ex. claude-sonnet-4-5)',use:'Utiliser',
+  manual_note:'Si la liste des modèles ne charge pas, tapez le nom du modèle manuellement et essayez de discuter.',
+  theme:'Thème',theme_sub:'Apparence claire ou sombre',dark:'Sombre',light:'Clair',
+  auto_title:'Titres intelligents',auto_title_sub:'Générer automatiquement le titre avec le modèle',on:'Oui',off:'Non',
+  tts:'Lire les réponses (TTS)',tts_sub:'Bouton 🔊 sur les réponses',trim_ctx:'Réduction du contexte',
+  trim_sub:'N’envoyer que les N derniers messages au serveur (0 = tous)',
+  def_proxy:'Proxy CORS par défaut',def_proxy_sub:'Pour les serveurs derrière WAF/CORS · <code>{url}</code> est remplacé',
+  worker_token:'Jeton de sécurité du Worker',worker_token_sub:'S’il est défini dans votre Worker, mettez-le ici pour que seule cette app puisse l’utiliser',
+  secret_ph:'Une chaîne secrète',security_lock:'Verrouillage de sécurité (chiffre les clés)',
+  security_lock_sub:'Les clés API sont chiffrées (AES-GCM) avec un mot de passe demandé à l’ouverture',
+  enable_lock:'Activer le verrou',remove_lock:'Retirer le verrou',gist_sync:'Synchronisation GitHub Gist',
+  gist_sync_sub:'Stocker/restaurer la sauvegarde dans un Gist privé (nécessite un Personal Access Token avec le scope gist)',
+  gist_id_ph:'ID du Gist (vide = créer au téléversement)',gist_push:'⬆ Envoyer',gist_pull:'⬇ Récupérer',
+  backup:'Sauvegarde',backup_sub:'Tout enregistrer dans un fichier',dl_backup:'Télécharger la sauvegarde',
+  restore:'Restaurer',restore_sub:'Importer un fichier de sauvegarde',pick_file:'Choisir un fichier',
+  clear_all:'Tout effacer',clear_all_sub:'Supprimer définitivement toutes les données',clear:'Effacer',
+  version_note:'Version {0} · toutes les données sont stockées sur cet appareil uniquement',
+  lock_prompt:'Saisissez le mot de passe pour déverrouiller l’app',pass_ph:'Mot de passe',unlock:'Déverrouiller',
+  forgot_reset:'Mot de passe oublié / effacer les données',language:'Langue',language_sub:'Langue de l’interface',
+  no_service_yet:'Aucun service ajouté pour le moment.',no_results:'Aucun résultat.',no_convs:'Aucune conversation.',
+  new_conv:'Nouvelle conversation',rename:'Renommer',export_md:'Exporter en Markdown',
+  send_first:'Envoyez un message pour démarrer la conversation.',reasoning:'🧠 Raisonnement du modèle',
+  edit:'Modifier',copy:'Copier',regenerate:'Régénérer',you:'Vous',copied:'Copié',
+  tts_unsupported:'TTS non pris en charge',mic_unsupported:'Entrée vocale non prise en charge',select_service:'Sélectionnez un service',loading_models:'Chargement des modèles…',
+  favorites:'★ Favoris',recent:'Récents',all_n:'Tous ({0})',balance_of:'Solde : {0} sur {1}',balance:'Solde',
+  custom_addr:'Personnalisé (adresse manuelle)',url_key_required:'URL et clé obligatoires',saved:'Enregistré',
+  del_profile_confirm:'Supprimer ce service et ses conversations ?',
+  url_key_needed:'Saisissez l’URL et la clé',testing:'Test en cours…',conn_ok:'Connexion réussie — {0} modèles trouvés',
+  failed:'Échec : ',models_error:'Erreur de modèles : ',select_service_first:'Sélectionnez d’abord un service',
+  rename_prompt:'Nouveau nom de la conversation :',no_svc_model:'Aucun service ou modèle sélectionné',
+  error_prefix:'⚠️ Erreur : ',title_req:'Donnez un titre court de 3 à 5 mots en {0} pour cette demande, uniquement le titre, sans guillemets :\n\n',
+  offline_msg:'Connexion Internet perdue',file_error:'Erreur de fichier : ',write_model_name:'Tapez un nom de modèle',
+  models_updated:'Modèles mis à jour',wrong_pass:'Mot de passe incorrect',lock_enabled:'Verrou activé',
+  no_lock_active:'Le verrou n’est pas actif',lock_removed:'Verrou retiré',gist_token_needed:'Saisissez votre jeton GitHub',
+  gist_saved:'Enregistré dans Gist',gist_error:'Erreur Gist : ',gist_token_id:'Jeton et ID de Gist requis',
+  gist_replace:'Remplacer les données actuelles par le contenu du Gist ?',gist_missing:'Fichier de sauvegarde introuvable dans le Gist',
+  gist_restored:'Restauré depuis Gist',backup_dl:'Sauvegarde téléchargée',replace_data:'Remplacer les données actuelles ?',
+  restored:'Restauré',invalid_file:'Fichier invalide',clear_confirm:'Supprimer toutes les données ? Cette action est irréversible.',
+  cleared:'Tout a été effacé',enc_confirm:'Supprimer les données chiffrées ?',
+  set_pass:'Choisissez un mot de passe pour le verrou (s’il est oublié, les clés sont perdues) :',
+  hint:'Entrée pour envoyer · Maj+Entrée nouvelle ligne',timeout_err:'Pas de réponse (délai dépassé)',
+  net_err:'Serveur inaccessible (réseau/CORS)',invalid_key:' — clé invalide',wrong_worker_tok:' — jeton Worker incorrect ?',
+  waf_page:'Le serveur a renvoyé une page de pare-feu (WAF), pas une réponse API',
+  bad_response:'Réponse invalide/vide du serveur',prompt_name:'Nom de ce prompt :',
+  prompt_empty:'Le texte système est vide',select_prompt:'Sélectionnez un prompt',prompt_deleted:'Supprimé',
+  tokens:'jetons',chars_n:'{0} caractères',user_label:'Utilisateur',assistant_label:'Assistant',
+  preset_agentrouter_note:'Ce serveur est derrière un pare-feu WAF ; il passe par le proxy CORS (rempli automatiquement). Clé : agentrouter.org/console/token',
+  sug1:'Écrivez une fonction Python de tri rapide',sug2:'Expliquez simplement la différence entre TCP et UDP',
+  sug3:'Rédigez un e-mail professionnel de relance après une réunion',sug4:'Donnez 5 idées de posts Instagram pour un café'
+},
+de:{
+  settings:'Einstellungen',services:'Dienste',add_service:'Dienst hinzufügen',conversations:'Unterhaltungen',
+  conv_search_ph:'Unterhaltungen durchsuchen…',new_chat:'Neuer Chat',select_model:'Modell wählen',model_placeholder:'— Modell —',
+  reload_models:'Modelle neu laden',chat_settings:'Chat-Einstellungen',offline_banner:'Sie sind offline — Senden nicht möglich',
+  cs_system_label:'System-Prompt (Rolle dieses Chats)',cs_system_ph:'z. B. Du bist ein präziser und hilfreicher Assistent…',
+  prompt_lib:'— Prompt-Bibliothek —',save:'Speichern',delete:'Löschen',max_tokens_label:'Max. Ausgabetokens (0 = Standard)',
+  welcome_h:'Willkommen bei AnyAPI Chat',welcome_p:'Füge einen Dienst hinzu, wähle ein Modell und beginne zu chatten.',
+  down:'Nach unten',add_image:'Bild hinzufügen',add_file:'Datei hinzufügen (Text/PDF)',voice_input:'Spracheingabe',
+  input_ph:'Nachricht eingeben… (Enter zum Senden, Shift+Enter neue Zeile)',send:'Senden',stop:'Stopp',
+  add_service_m:'Dienst hinzufügen',edit_service:'Dienst bearbeiten',service:'Dienst',
+  preset_label:'Fertiger Dienst',preset_ph:'— Aus Liste wählen oder „Benutzerdefiniert“ —',custom_name:'Eigener Name',
+  name_ph:'z. B. AgentRouter',server_url:'Serveradresse (Basis-URL)',api_key:'Webdienst-Schlüssel (API Key)',
+  cors_proxy:'CORS-Proxy (optional)',for_waf:'— für WAF/CORS ·',worker_src:'Worker-Quellcode',
+  profile_note:'Adresse ohne <code>/v1</code> eingeben. Schlüssel/Adresse werden nur auf diesem Gerät gespeichert.',
+  test_conn:'Verbindung testen',pick_model:'Modell wählen',search_model_ph:'Modell suchen…',
+  manual_model_ph:'Modellnamen manuell eingeben (z. B. claude-sonnet-4-5)',use:'Verwenden',
+  manual_note:'Wenn die Modellliste nicht lädt, gib den Modellnamen manuell ein und versuche zu chatten.',
+  theme:'Design',theme_sub:'Helles oder dunkles Erscheinungsbild',dark:'Dunkel',light:'Hell',
+  auto_title:'Intelligente Titel',auto_title_sub:'Titel automatisch mit dem Modell erzeugen',on:'Ein',off:'Aus',
+  tts:'Antworten vorlesen (TTS)',tts_sub:'🔊-Button an Antworten',trim_ctx:'Kontext kürzen',
+  trim_sub:'Nur die letzten N Nachrichten an den Server senden (0 = alle)',
+  def_proxy:'Standard-CORS-Proxy',def_proxy_sub:'Für Server hinter WAF/CORS · <code>{url}</code> wird ersetzt',
+  worker_token:'Worker-Sicherheitstoken',worker_token_sub:'Falls im Worker gesetzt, hier eintragen, damit nur diese App ihn nutzen kann',
+  secret_ph:'Eine geheime Zeichenkette',security_lock:'Sicherheitssperre (verschlüsselt Schlüssel)',
+  security_lock_sub:'API-Schlüssel werden (AES-GCM) mit einem Passwort verschlüsselt und beim Öffnen abgefragt',
+  enable_lock:'Sperre aktivieren',remove_lock:'Sperre entfernen',gist_sync:'GitHub-Gist-Synchronisierung',
+  gist_sync_sub:'Backup in privatem Gist speichern/wiederherstellen (erfordert Personal Access Token mit gist-Bereich)',
+  gist_id_ph:'Gist-ID (leer = beim Hochladen neu erstellen)',gist_push:'⬆ Hochladen',gist_pull:'⬇ Abrufen',
+  backup:'Backup',backup_sub:'Alles in einer Datei speichern',dl_backup:'Backup herunterladen',
+  restore:'Wiederherstellen',restore_sub:'Backup-Datei importieren',pick_file:'Datei wählen',
+  clear_all:'Alles löschen',clear_all_sub:'Alle Daten endgültig löschen',clear:'Löschen',
+  version_note:'Version {0} · alle Daten werden nur auf diesem Gerät gespeichert',
+  lock_prompt:'Passwort eingeben, um die App zu entsperren',pass_ph:'Passwort',unlock:'Entsperren',
+  forgot_reset:'Passwort vergessen / Daten löschen',language:'Sprache',language_sub:'Sprache der Benutzeroberfläche',
+  no_service_yet:'Noch kein Dienst hinzugefügt.',no_results:'Keine Ergebnisse.',no_convs:'Keine Unterhaltungen.',
+  new_conv:'Neue Unterhaltung',rename:'Umbenennen',export_md:'Als Markdown exportieren',
+  send_first:'Sende eine Nachricht, um die Unterhaltung zu starten.',reasoning:'🧠 Modell-Überlegung',
+  edit:'Bearbeiten',copy:'Kopieren',regenerate:'Neu generieren',you:'Du',copied:'Kopiert',
+  tts_unsupported:'TTS nicht unterstützt',mic_unsupported:'Spracheingabe nicht unterstützt',select_service:'Wähle einen Dienst',loading_models:'Modelle werden geladen…',
+  favorites:'★ Favoriten',recent:'Zuletzt',all_n:'Alle ({0})',balance_of:'Guthaben: {0} von {1}',balance:'Guthaben',
+  custom_addr:'Benutzerdefiniert (manuelle Adresse)',url_key_required:'URL und Schlüssel sind erforderlich',saved:'Gespeichert',
+  del_profile_confirm:'Diesen Dienst und seine Unterhaltungen löschen?',
+  url_key_needed:'URL und Schlüssel eingeben',testing:'Teste…',conn_ok:'Verbindung OK — {0} Modelle gefunden',
+  failed:'Fehlgeschlagen: ',models_error:'Modellfehler: ',select_service_first:'Zuerst einen Dienst wählen',
+  rename_prompt:'Neuer Name der Unterhaltung:',no_svc_model:'Kein Dienst oder Modell ausgewählt',
+  error_prefix:'⚠️ Fehler: ',title_req:'Gib für diese Anfrage einen kurzen Titel mit 3-5 Wörtern auf {0} an, nur den Titel, ohne Anführungszeichen:\n\n',
+  offline_msg:'Internetverbindung verloren',file_error:'Dateifehler: ',write_model_name:'Gib einen Modellnamen ein',
+  models_updated:'Modelle aktualisiert',wrong_pass:'Falsches Passwort',lock_enabled:'Sperre aktiviert',
+  no_lock_active:'Sperre ist nicht aktiv',lock_removed:'Sperre entfernt',gist_token_needed:'Gib dein GitHub-Token ein',
+  gist_saved:'In Gist gespeichert',gist_error:'Gist-Fehler: ',gist_token_id:'Token und Gist-ID erforderlich',
+  gist_replace:'Aktuelle Daten durch Gist-Inhalt ersetzen?',gist_missing:'Backup-Datei im Gist nicht gefunden',
+  gist_restored:'Aus Gist wiederhergestellt',backup_dl:'Backup heruntergeladen',replace_data:'Aktuelle Daten ersetzen?',
+  restored:'Wiederhergestellt',invalid_file:'Ungültige Datei',clear_confirm:'Alle Daten löschen? Dies kann nicht rückgängig gemacht werden.',
+  cleared:'Alles gelöscht',enc_confirm:'Verschlüsselte Daten löschen?',
+  set_pass:'Wähle ein Passwort für die Sperre (bei Verlust sind die Schlüssel verloren):',
+  hint:'Enter zum Senden · Shift+Enter neue Zeile',timeout_err:'Keine Antwort (Zeitüberschreitung)',
+  net_err:'Server nicht erreichbar (Netzwerk/CORS)',invalid_key:' — ungültiger Schlüssel',wrong_worker_tok:' — falsches Worker-Token?',
+  waf_page:'Der Server lieferte eine Firewall-Seite (WAF) statt einer API-Antwort',
+  bad_response:'Ungültige/leere Antwort vom Server',prompt_name:'Name dieses Prompts:',
+  prompt_empty:'Systemtext ist leer',select_prompt:'Prompt auswählen',prompt_deleted:'Gelöscht',
+  tokens:'Tokens',chars_n:'{0} Zeichen',user_label:'Benutzer',assistant_label:'Assistent',
+  preset_agentrouter_note:'Dieser Server steht hinter einer WAF-Firewall; er läuft über den CORS-Proxy (automatisch ausgefüllt). Schlüssel: agentrouter.org/console/token',
+  sug1:'Schreibe eine Python-Funktion zum schnellen Sortieren',sug2:'Erkläre den Unterschied zwischen TCP und UDP einfach',
+  sug3:'Schreibe eine professionelle Folge-E-Mail für ein Meeting',sug4:'Gib 5 Instagram-Post-Ideen für ein Café'
+},
+pt:{
+  settings:'Configurações',services:'Serviços',add_service:'Adicionar serviço',conversations:'Conversas',
+  conv_search_ph:'Pesquisar conversas…',new_chat:'Novo chat',select_model:'Selecionar modelo',model_placeholder:'— Modelo —',
+  reload_models:'Recarregar modelos',chat_settings:'Configurações do chat',offline_banner:'Você está offline — envio indisponível',
+  cs_system_label:'Prompt do sistema (papel desta conversa)',cs_system_ph:'Ex.: você é um assistente preciso e útil…',
+  prompt_lib:'— Biblioteca de prompts —',save:'Salvar',delete:'Excluir',max_tokens_label:'Máx. tokens de saída (0 = padrão)',
+  welcome_h:'Bem-vindo ao AnyAPI Chat',welcome_p:'Adicione um serviço, escolha um modelo e comece a conversar.',
+  down:'Para baixo',add_image:'Adicionar imagem',add_file:'Adicionar arquivo (texto/PDF)',voice_input:'Entrada de voz',
+  input_ph:'Digite sua mensagem… (Enter para enviar, Shift+Enter nova linha)',send:'Enviar',stop:'Parar',
+  add_service_m:'Adicionar serviço',edit_service:'Editar serviço',service:'Serviço',
+  preset_label:'Serviço pronto',preset_ph:'— Escolha da lista ou “Personalizado” —',custom_name:'Nome personalizado',
+  name_ph:'ex.: AgentRouter',server_url:'Endereço do servidor (URL base)',api_key:'Chave do serviço (API Key)',
+  cors_proxy:'Proxy CORS (opcional)',for_waf:'— para WAF/CORS ·',worker_src:'Código do Worker',
+  profile_note:'Digite o endereço sem <code>/v1</code>. Chave/endereço são salvos apenas neste dispositivo.',
+  test_conn:'Testar conexão',pick_model:'Selecionar modelo',search_model_ph:'Pesquisar modelo…',
+  manual_model_ph:'Digite o nome do modelo manualmente (ex.: claude-sonnet-4-5)',use:'Usar',
+  manual_note:'Se a lista de modelos não carregar, digite o nome do modelo manualmente e tente conversar.',
+  theme:'Tema',theme_sub:'Aparência clara ou escura',dark:'Escuro',light:'Claro',
+  auto_title:'Títulos inteligentes',auto_title_sub:'Gerar título automaticamente com o modelo',on:'Ligado',off:'Desligado',
+  tts:'Ler respostas (TTS)',tts_sub:'Botão 🔊 nas respostas',trim_ctx:'Reduzir contexto',
+  trim_sub:'Enviar apenas as últimas N mensagens ao servidor (0 = todas)',
+  def_proxy:'Proxy CORS padrão',def_proxy_sub:'Para servidores atrás de WAF/CORS · <code>{url}</code> é substituído',
+  worker_token:'Token de segurança do Worker',worker_token_sub:'Se definido no seu Worker, coloque aqui para que só este app possa usá-lo',
+  secret_ph:'Uma string secreta',security_lock:'Trava de segurança (criptografa chaves)',
+  security_lock_sub:'As chaves de API são criptografadas (AES-GCM) com senha e solicitadas ao abrir o app',
+  enable_lock:'Ativar trava',remove_lock:'Remover trava',gist_sync:'Sincronização com GitHub Gist',
+  gist_sync_sub:'Salvar/restaurar backup em um Gist privado (requer Personal Access Token com escopo gist)',
+  gist_id_ph:'ID do Gist (vazio = criar novo ao enviar)',gist_push:'⬆ Enviar',gist_pull:'⬇ Buscar',
+  backup:'Backup',backup_sub:'Salvar tudo em um arquivo',dl_backup:'Baixar backup',
+  restore:'Restaurar',restore_sub:'Importar um arquivo de backup',pick_file:'Escolher arquivo',
+  clear_all:'Apagar tudo',clear_all_sub:'Excluir permanentemente todos os dados',clear:'Apagar',
+  version_note:'Versão {0} · todos os dados ficam apenas neste dispositivo',
+  lock_prompt:'Digite a senha para desbloquear o app',pass_ph:'Senha',unlock:'Desbloquear',
+  forgot_reset:'Esqueci a senha / apagar dados',language:'Idioma',language_sub:'Idioma da interface',
+  no_service_yet:'Nenhum serviço adicionado ainda.',no_results:'Nenhum resultado.',no_convs:'Nenhuma conversa ainda.',
+  new_conv:'Nova conversa',rename:'Renomear',export_md:'Exportar Markdown',
+  send_first:'Envie uma mensagem para iniciar a conversa.',reasoning:'🧠 Raciocínio do modelo',
+  edit:'Editar',copy:'Copiar',regenerate:'Regenerar',you:'Você',copied:'Copiado',
+  tts_unsupported:'TTS não suportado',mic_unsupported:'Entrada de voz não suportada',select_service:'Selecione um serviço',loading_models:'Carregando modelos…',
+  favorites:'★ Favoritos',recent:'Recentes',all_n:'Todos ({0})',balance_of:'Saldo: {0} de {1}',balance:'Saldo',
+  custom_addr:'Personalizado (endereço manual)',url_key_required:'URL e chave são obrigatórias',saved:'Salvo',
+  del_profile_confirm:'Excluir este serviço e suas conversas?',
+  url_key_needed:'Digite a URL e a chave',testing:'Testando…',conn_ok:'Conexão OK — {0} modelos encontrados',
+  failed:'Falhou: ',models_error:'Erro de modelos: ',select_service_first:'Primeiro selecione um serviço',
+  rename_prompt:'Novo nome da conversa:',no_svc_model:'Nenhum serviço ou modelo selecionado',
+  error_prefix:'⚠️ Erro: ',title_req:'Dê um título curto de 3 a 5 palavras em {0} para esta solicitação, apenas o título, sem aspas:\n\n',
+  offline_msg:'Conexão com a internet perdida',file_error:'Erro de arquivo: ',write_model_name:'Digite um nome de modelo',
+  models_updated:'Modelos atualizados',wrong_pass:'Senha incorreta',lock_enabled:'Trava ativada',
+  no_lock_active:'A trava não está ativa',lock_removed:'Trava removida',gist_token_needed:'Digite seu token do GitHub',
+  gist_saved:'Salvo no Gist',gist_error:'Erro do Gist: ',gist_token_id:'Token e ID do Gist são necessários',
+  gist_replace:'Substituir os dados atuais pelo conteúdo do Gist?',gist_missing:'Arquivo de backup não encontrado no Gist',
+  gist_restored:'Restaurado do Gist',backup_dl:'Backup baixado',replace_data:'Substituir os dados atuais?',
+  restored:'Restaurado',invalid_file:'Arquivo inválido',clear_confirm:'Apagar todos os dados? Isso não pode ser desfeito.',
+  cleared:'Tudo apagado',enc_confirm:'Excluir dados criptografados?',
+  set_pass:'Escolha uma senha para a trava (se esquecida, as chaves são perdidas):',
+  hint:'Enter para enviar · Shift+Enter nova linha',timeout_err:'Sem resposta (timeout)',
+  net_err:'Não foi possível acessar o servidor (rede/CORS)',invalid_key:' — chave inválida',wrong_worker_tok:' — token do Worker errado?',
+  waf_page:'O servidor retornou uma página de firewall (WAF), não uma resposta de API',
+  bad_response:'Resposta inválida/vazia do servidor',prompt_name:'Nome deste prompt:',
+  prompt_empty:'O texto do sistema está vazio',select_prompt:'Selecione um prompt',prompt_deleted:'Excluído',
+  tokens:'tokens',chars_n:'{0} caracteres',user_label:'Usuário',assistant_label:'Assistente',
+  preset_agentrouter_note:'Este servidor está atrás de firewall WAF; passa pelo proxy CORS (preenchido automaticamente). Chave: agentrouter.org/console/token',
+  sug1:'Escreva uma função Python de ordenação rápida',sug2:'Explique a diferença entre TCP e UDP de forma simples',
+  sug3:'Escreva um e-mail profissional de acompanhamento de reunião',sug4:'Dê 5 ideias de posts de Instagram para um café'
+},
+ru:{
+  settings:'Настройки',services:'Сервисы',add_service:'Добавить сервис',conversations:'Диалоги',
+  conv_search_ph:'Поиск по диалогам…',new_chat:'Новый чат',select_model:'Выбрать модель',model_placeholder:'— Модель —',
+  reload_models:'Перезагрузить модели',chat_settings:'Настройки чата',offline_banner:'Вы офлайн — отправка недоступна',
+  cs_system_label:'Системный промпт (роль этого чата)',cs_system_ph:'Например: ты точный и полезный ассистент…',
+  prompt_lib:'— Библиотека промптов —',save:'Сохранить',delete:'Удалить',max_tokens_label:'Макс. токенов вывода (0 = по умолчанию)',
+  welcome_h:'Добро пожаловать в AnyAPI Chat',welcome_p:'Добавьте сервис, выберите модель и начните общение.',
+  down:'Вниз',add_image:'Добавить изображение',add_file:'Добавить файл (текст/PDF)',voice_input:'Голосовой ввод',
+  input_ph:'Введите сообщение… (Enter — отправить, Shift+Enter — новая строка)',send:'Отправить',stop:'Стоп',
+  add_service_m:'Добавить сервис',edit_service:'Изменить сервис',service:'Сервис',
+  preset_label:'Готовый сервис',preset_ph:'— Выберите из списка или «Свой» —',custom_name:'Своё название',
+  name_ph:'например AgentRouter',server_url:'Адрес сервера (Base URL)',api_key:'Ключ сервиса (API Key)',
+  cors_proxy:'CORS-прокси (необязательно)',for_waf:'— для WAF/CORS ·',worker_src:'Исходник Worker',
+  profile_note:'Введите адрес без <code>/v1</code>. Ключ/адрес хранятся только на этом устройстве.',
+  test_conn:'Проверить соединение',pick_model:'Выбрать модель',search_model_ph:'Поиск модели…',
+  manual_model_ph:'Введите название модели вручную (например claude-sonnet-4-5)',use:'Использовать',
+  manual_note:'Если список моделей не загрузился, введите название модели вручную и попробуйте чат.',
+  theme:'Тема',theme_sub:'Светлый или тёмный вид',dark:'Тёмная',light:'Светлая',
+  auto_title:'Умные заголовки',auto_title_sub:'Автоматически создавать заголовок диалога с помощью модели',on:'Вкл',off:'Выкл',
+  tts:'Читать ответы (TTS)',tts_sub:'Кнопка 🔊 на ответах',trim_ctx:'Сокращение контекста',
+  trim_sub:'Отправлять только последние N сообщений на сервер (0 = все)',
+  def_proxy:'CORS-прокси по умолчанию',def_proxy_sub:'Для серверов за WAF/CORS · <code>{url}</code> заменяется',
+  worker_token:'Токен безопасности Worker',worker_token_sub:'Если задан в Worker, укажите его здесь, чтобы только это приложение могло им пользоваться',
+  secret_ph:'Секретная строка',security_lock:'Защитный замок (шифрует ключи)',
+  security_lock_sub:'Ключи API шифруются (AES-GCM) паролем и запрашиваются при открытии приложения',
+  enable_lock:'Включить замок',remove_lock:'Убрать замок',gist_sync:'Синхронизация с GitHub Gist',
+  gist_sync_sub:'Сохранять/восстанавливать бэкап в приватном Gist (нужен Personal Access Token со scope gist)',
+  gist_id_ph:'ID Gist (пусто = создать новый при загрузке)',gist_push:'⬆ Отправить',gist_pull:'⬇ Получить',
+  backup:'Резервная копия',backup_sub:'Сохранить всё в один файл',dl_backup:'Скачать бэкап',
+  restore:'Восстановление',restore_sub:'Импортировать файл бэкапа',pick_file:'Выбрать файл',
+  clear_all:'Очистить всё',clear_all_sub:'Полностью удалить все данные',clear:'Очистить',
+  version_note:'Версия {0} · все данные хранятся только на этом устройстве',
+  lock_prompt:'Введите пароль, чтобы разблокировать приложение',pass_ph:'Пароль',unlock:'Разблокировать',
+  forgot_reset:'Забыли пароль / удалить данные',language:'Язык',language_sub:'Язык интерфейса',
+  no_service_yet:'Сервисов пока нет.',no_results:'Ничего не найдено.',no_convs:'Диалогов пока нет.',
+  new_conv:'Новый диалог',rename:'Переименовать',export_md:'Экспорт в Markdown',
+  send_first:'Отправьте сообщение, чтобы начать диалог.',reasoning:'🧠 Рассуждения модели',
+  edit:'Изменить',copy:'Копировать',regenerate:'Повторить',you:'Вы',copied:'Скопировано',
+  tts_unsupported:'TTS не поддерживается',mic_unsupported:'Голосовой ввод не поддерживается',select_service:'Выберите сервис',loading_models:'Загрузка моделей…',
+  favorites:'★ Избранное',recent:'Недавние',all_n:'Все ({0})',balance_of:'Баланс: {0} из {1}',balance:'Баланс',
+  custom_addr:'Свой (ручной адрес)',url_key_required:'Адрес и ключ обязательны',saved:'Сохранено',
+  del_profile_confirm:'Удалить этот сервис и его диалоги?',
+  url_key_needed:'Введите адрес и ключ',testing:'Проверка…',conn_ok:'Соединение OK — найдено {0} моделей',
+  failed:'Не удалось: ',models_error:'Ошибка моделей: ',select_service_first:'Сначала выберите сервис',
+  rename_prompt:'Новое название диалога:',no_svc_model:'Сервис или модель не выбраны',
+  error_prefix:'⚠️ Ошибка: ',title_req:'Дай короткий заголовок из 3–5 слов на {0} для этого запроса, только заголовок, без кавычек:\n\n',
+  offline_msg:'Интернет-соединение потеряно',file_error:'Ошибка файла: ',write_model_name:'Введите название модели',
+  models_updated:'Модели обновлены',wrong_pass:'Неверный пароль',lock_enabled:'Замок включён',
+  no_lock_active:'Замок не активен',lock_removed:'Замок снят',gist_token_needed:'Введите ваш GitHub-токен',
+  gist_saved:'Сохранено в Gist',gist_error:'Ошибка Gist: ',gist_token_id:'Нужны токен и ID Gist',
+  gist_replace:'Заменить текущие данные содержимым Gist?',gist_missing:'Файл бэкапа не найден в Gist',
+  gist_restored:'Восстановлено из Gist',backup_dl:'Бэкап скачан',replace_data:'Заменить текущие данные?',
+  restored:'Восстановлено',invalid_file:'Недопустимый файл',clear_confirm:'Удалить все данные? Это необратимо.',
+  cleared:'Всё очищено',enc_confirm:'Удалить зашифрованные данные?',
+  set_pass:'Придумайте пароль для замка (при потере ключи будут утеряны):',
+  hint:'Enter — отправить · Shift+Enter — новая строка',timeout_err:'Нет ответа (таймаут)',
+  net_err:'Нет доступа к серверу (сеть/CORS)',invalid_key:' — неверный ключ',wrong_worker_tok:' — неверный токен Worker?',
+  waf_page:'Сервер вернул страницу файрвола (WAF), а не ответ API',
+  bad_response:'Недопустимый/пустой ответ сервера',prompt_name:'Название этого промпта:',
+  prompt_empty:'Системный текст пуст',select_prompt:'Выберите промпт',prompt_deleted:'Удалено',
+  tokens:'токенов',chars_n:'{0} символов',user_label:'Пользователь',assistant_label:'Ассистент',
+  preset_agentrouter_note:'Этот сервер стоит за файрволом WAF; трафик идёт через CORS-прокси (заполнено автоматически). Ключ: agentrouter.org/console/token',
+  sug1:'Напиши функцию на Python для быстрой сортировки',sug2:'Просто объясни разницу между TCP и UDP',
+  sug3:'Напиши профессиональное письмо-напоминание после встречи',sug4:'Дай 5 идей для постов в Instagram кофейни'
+},
+ar:{
+  settings:'الإعدادات',services:'الخدمات',add_service:'إضافة خدمة',conversations:'المحادثات',
+  conv_search_ph:'البحث في المحادثات…',new_chat:'محادثة جديدة',select_model:'اختيار النموذج',model_placeholder:'— النموذج —',
+  reload_models:'إعادة تحميل النماذج',chat_settings:'إعدادات المحادثة',offline_banner:'أنت غير متصل — الإرسال غير ممكن',
+  cs_system_label:'مطالبة النظام (دور هذه المحادثة)',cs_system_ph:'مثال: أنت مساعد دقيق ومفيد…',
+  prompt_lib:'— مكتبة المطالبات —',save:'حفظ',delete:'حذف',max_tokens_label:'أقصى رموز إخراج (٠ = الافتراضي)',
+  welcome_h:'مرحباً بك في AnyAPI Chat',welcome_p:'أضف خدمة، اختر نموذجاً وابدأ المحادثة.',
+  down:'لأسفل',add_image:'إضافة صورة',add_file:'إضافة ملف (نص/PDF)',voice_input:'إدخال صوتي',
+  input_ph:'اكتب رسالتك… (Enter للإرسال، Shift+Enter سطر جديد)',send:'إرسال',stop:'إيقاف',
+  add_service_m:'إضافة خدمة',edit_service:'تعديل الخدمة',service:'خدمة',
+  preset_label:'خدمة جاهزة',preset_ph:'— اختر من القائمة أو «مخصص» —',custom_name:'اسم مخصص',
+  name_ph:'مثال: AgentRouter',server_url:'عنوان الخادم (Base URL)',api_key:'مفتاح الخدمة (API Key)',
+  cors_proxy:'وكيل CORS (اختياري)',for_waf:'— لـ WAF/CORS ·',worker_src:'كود الـ Worker',
+  profile_note:'أدخل العنوان بدون <code>/v1</code>. المفتاح/العنوان يُحفظان على هذا الجهاز فقط.',
+  test_conn:'اختبار الاتصال',pick_model:'اختيار النموذج',search_model_ph:'البحث عن نموذج…',
+  manual_model_ph:'أدخل اسم النموذج يدوياً (مثال: claude-sonnet-4-5)',use:'استخدام',
+  manual_note:'إذا لم تظهر قائمة النماذج، اكتب اسم النموذج يدوياً وجرّب المحادثة.',
+  theme:'المظهر',theme_sub:'مظهر فاتح أو داكن',dark:'داكن',light:'فاتح',
+  auto_title:'عناوين ذكية',auto_title_sub:'إنشاء عنوان المحادثة تلقائياً بالنموذج',on:'تشغيل',off:'إيقاف',
+  tts:'قراءة الردود (TTS)',tts_sub:'زر 🔊 على الردود',trim_ctx:'تقليص السياق',
+  trim_sub:'إرسال آخر N رسائل فقط إلى الخادم (٠ = الكل)',
+  def_proxy:'وكيل CORS الافتراضي',def_proxy_sub:'لخوادم خلف WAF/CORS · يتم استبدال <code>{url}</code>',
+  worker_token:'رمز أمان الـ Worker',worker_token_sub:'إذا ضبطته في Worker، ضعه هنا ليستخدمه هذا التطبيق فقط',
+  secret_ph:'سلسلة سرية',security_lock:'قفل أمان (تشفير المفاتيح)',
+  security_lock_sub:'تُشفَّر مفاتيح API (AES-GCM) بكلمة مرور وتُطلب عند فتح التطبيق',
+  enable_lock:'تفعيل القفل',remove_lock:'إزالة القفل',gist_sync:'مزامنة GitHub Gist',
+  gist_sync_sub:'حفظ/استعادة النسخة الاحتياطية في Gist خاص (يتطلب Personal Access Token بصلاحية gist)',
+  gist_id_ph:'معرّف Gist (فارغ = إنشاء جديد عند الرفع)',gist_push:'⬆ رفع',gist_pull:'⬇ جلب',
+  backup:'نسخة احتياطية',backup_sub:'حفظ كل شيء في ملف واحد',dl_backup:'تنزيل النسخة',
+  restore:'استعادة',restore_sub:'استيراد ملف نسخة احتياطية',pick_file:'اختيار ملف',
+  clear_all:'مسح كل شيء',clear_all_sub:'حذف جميع البيانات نهائياً',clear:'مسح',
+  version_note:'الإصدار {0} · كل البيانات محفوظة على هذا الجهاز فقط',
+  lock_prompt:'أدخل كلمة المرور لفتح التطبيق',pass_ph:'كلمة المرور',unlock:'فتح',
+  forgot_reset:'نسيت كلمة المرور / حذف البيانات',language:'اللغة',language_sub:'لغة الواجهة',
+  no_service_yet:'لم تُضف أي خدمة بعد.',no_results:'لا نتائج.',no_convs:'لا توجد محادثات.',
+  new_conv:'محادثة جديدة',rename:'إعادة تسمية',export_md:'تصدير Markdown',
+  send_first:'أرسل رسالة لبدء المحادثة.',reasoning:'🧠 تفكير النموذج',
+  edit:'تعديل',copy:'نسخ',regenerate:'إعادة توليد',you:'أنت',copied:'تم النسخ',
+  tts_unsupported:'TTS غير مدعوم',mic_unsupported:'الإدخال الصوتي غير مدعوم',select_service:'اختر خدمة',loading_models:'جارٍ تحميل النماذج…',
+  favorites:'★ المفضلة',recent:'الأخيرة',all_n:'الكل ({0})',balance_of:'الرصيد: {0} من {1}',balance:'الرصيد',
+  custom_addr:'مخصص (عنوان يدوي)',url_key_required:'العنوان والمفتاح مطلوبان',saved:'تم الحفظ',
+  del_profile_confirm:'حذف هذه الخدمة ومحادثاتها؟',
+  url_key_needed:'أدخل العنوان والمفتاح',testing:'جارٍ الاختبار…',conn_ok:'الاتصال ناجح — تم العثور على {0} نماذج',
+  failed:'فشل: ',models_error:'خطأ النماذج: ',select_service_first:'اختر خدمة أولاً',
+  rename_prompt:'الاسم الجديد للمحادثة:',no_svc_model:'لم يتم اختيار خدمة أو نموذج',
+  error_prefix:'⚠️ خطأ: ',title_req:'أعط عنواناً قصيراً من ٣ إلى ٥ كلمات باللغة {0} لهذا الطلب، العنوان فقط بدون اقتباس:\n\n',
+  offline_msg:'انقطع الاتصال بالإنترنت',file_error:'خطأ الملف: ',write_model_name:'اكتب اسم نموذج',
+  models_updated:'تم تحديث النماذج',wrong_pass:'كلمة المرور خاطئة',lock_enabled:'تم تفعيل القفل',
+  no_lock_active:'القفل غير مفعّل',lock_removed:'تمت إزالة القفل',gist_token_needed:'أدخل رمز GitHub الخاص بك',
+  gist_saved:'تم الحفظ في Gist',gist_error:'خطأ Gist: ',gist_token_id:'الرمز ومعرّف Gist مطلوبان',
+  gist_replace:'استبدال البيانات الحالية بمحتوى Gist؟',gist_missing:'ملف النسخة غير موجود في Gist',
+  gist_restored:'تمت الاستعادة من Gist',backup_dl:'تم تنزيل النسخة',replace_data:'استبدال البيانات الحالية؟',
+  restored:'تمت الاستعادة',invalid_file:'ملف غير صالح',clear_confirm:'حذف جميع البيانات؟ لا يمكن التراجع.',
+  cleared:'تم مسح كل شيء',enc_confirm:'حذف البيانات المشفرة؟',
+  set_pass:'اختر كلمة مرور للقفل (عند نسيانها تُفقد المفاتيح):',
+  hint:'Enter للإرسال · Shift+Enter سطر جديد',timeout_err:'لا استجابة (مهلة)',
+  net_err:'تعذّر الوصول إلى الخادم (شبكة/CORS)',invalid_key:' — مفتاح غير صالح',wrong_worker_tok:' — رمز Worker خاطئ؟',
+  waf_page:'أعاد الخادم صفحة جدار حماية (WAF) وليس استجابة API',
+  bad_response:'استجابة غير صالحة/فارغة من الخادم',prompt_name:'اسم هذه المطالبة:',
+  prompt_empty:'نص النظام فارغ',select_prompt:'اختر مطالبة',prompt_deleted:'تم الحذف',
+  tokens:'رمز',chars_n:'{0} حرف',user_label:'المستخدم',assistant_label:'المساعد',
+  preset_agentrouter_note:'هذا الخادم خلف جدار حماية WAF؛ يمر عبر وكيل CORS (مُعبأ تلقائياً). المفتاح: agentrouter.org/console/token',
+  sug1:'اكتب دالة بايثون للفرز السريع',sug2:'اشرح الفرق بين TCP و UDP ببساطة',
+  sug3:'اكتب بريداً إلكترونياً احترافياً لمتابعة اجتماع',sug4:'أعط ٥ أفكار لمنشورات إنستغرام لمقهى'
+},
+hi:{
+  settings:'सेटिंग्स',services:'सेवाएँ',add_service:'सेवा जोड़ें',conversations:'बातचीत',
+  conv_search_ph:'बातचीत खोजें…',new_chat:'नई बातचीत',select_model:'मॉडल चुनें',model_placeholder:'— मॉडल —',
+  reload_models:'मॉडल फिर से लोड करें',chat_settings:'चैट सेटिंग्स',offline_banner:'आप ऑफ़लाइन हैं — भेजना संभव नहीं',
+  cs_system_label:'सिस्टम प्रॉम्प्ट (इस चैट की भूमिका)',cs_system_ph:'उदाहरण: आप एक सटीक और मददगार सहायक हैं…',
+  prompt_lib:'— प्रॉम्प्ट लाइब्रेरी —',save:'सहेजें',delete:'हटाएँ',max_tokens_label:'अधिकतम आउटपुट टोकन (0 = डिफ़ॉल्ट)',
+  welcome_h:'AnyAPI Chat में आपका स्वागत है',welcome_p:'एक सेवा जोड़ें, मॉडल चुनें और बातचीत शुरू करें।',
+  down:'नीचे',add_image:'चित्र जोड़ें',add_file:'फ़ाइल जोड़ें (टेक्स्ट/PDF)',voice_input:'वॉइस इनपुट',
+  input_ph:'अपना संदेश लिखें… (भेजने के लिए Enter, नई पंक्ति के लिए Shift+Enter)',send:'भेजें',stop:'रोकें',
+  add_service_m:'सेवा जोड़ें',edit_service:'सेवा संपादित करें',service:'सेवा',
+  preset_label:'तैयार सेवा',preset_ph:'— सूची से चुनें या «कस्टम» —',custom_name:'कस्टम नाम',
+  name_ph:'जैसे AgentRouter',server_url:'सर्वर पता (Base URL)',api_key:'सेवा कुंजी (API Key)',
+  cors_proxy:'CORS प्रॉक्सी (वैकल्पिक)',for_waf:'— WAF/CORS के लिए ·',worker_src:'Worker स्रोत',
+  profile_note:'पता बिना <code>/v1</code> के दर्ज करें। कुंजी/पता केवल इसी डिवाइस पर संग्रहीत होते हैं।',
+  test_conn:'कनेक्शन परीक्षण',pick_model:'मॉडल चुनें',search_model_ph:'मॉडल खोजें…',
+  manual_model_ph:'मॉडल नाम मैन्युअल दर्ज करें (जैसे claude-sonnet-4-5)',use:'उपयोग करें',
+  manual_note:'यदि मॉडल सूची नहीं आती है, तो मॉडल नाम मैन्युअल लिखें और चैट आज़माएँ।',
+  theme:'थीम',theme_sub:'हल्का या गहरा रूप',dark:'गहरा',light:'हल्का',
+  auto_title:'स्मार्ट शीर्षक',auto_title_sub:'मॉडल से स्वचालित रूप से बातचीत का शीर्षक बनाएँ',on:'चालू',off:'बंद',
+  tts:'उत्तर पढ़ें (TTS)',tts_sub:'उत्तरों पर 🔊 बटन',trim_ctx:'संदर्भ छोटा करें',
+  trim_sub:'सर्वर पर केवल अंतिम N संदेश भेजें (0 = सभी)',
+  def_proxy:'डिफ़ॉल्ट CORS प्रॉक्सी',def_proxy_sub:'WAF/CORS के पीछे के सर्वरों के लिए · <code>{url}</code> बदला जाता है',
+  worker_token:'Worker सुरक्षा टोकन',worker_token_sub:'यदि Worker में सेट है, तो इसे यहाँ रखें ताकि केवल यह ऐप इसका उपयोग कर सके',
+  secret_ph:'एक गुप्त स्ट्रिंग',security_lock:'सुरक्षा लॉक (कुंजियाँ एन्क्रिप्ट होती हैं)',
+  security_lock_sub:'API कुंजियाँ पासवर्ड से एन्क्रिप्ट (AES-GCM) होती हैं और ऐप खोलने पर पूछा जाता है',
+  enable_lock:'लॉक सक्षम करें',remove_lock:'लॉक हटाएँ',gist_sync:'GitHub Gist सिंक',
+  gist_sync_sub:'निजी Gist में बैकअप सहेजें/पुनर्स्थापित करें (gist स्कोप वाला Personal Access Token चाहिए)',
+  gist_id_ph:'Gist ID (खाली = अपलोड पर नया बनाएँ)',gist_push:'⬆ अपलोड',gist_pull:'⬇ प्राप्त करें',
+  backup:'बैकअप',backup_sub:'सब कुछ एक फ़ाइल में सहेजें',dl_backup:'बैकअप डाउनलोड करें',
+  restore:'पुनर्स्थापित करें',restore_sub:'बैकअप फ़ाइल आयात करें',pick_file:'फ़ाइल चुनें',
+  clear_all:'सब कुछ मिटाएँ',clear_all_sub:'सभी डेटा स्थायी रूप से हटाएँ',clear:'मिटाएँ',
+  version_note:'संस्करण {0} · सभी डेटा केवल इसी डिवाइस पर संग्रहीत होते हैं',
+  lock_prompt:'ऐप खोलने के लिए पासवर्ड दर्ज करें',pass_ph:'पासवर्ड',unlock:'खोलें',
+  forgot_reset:'पासवर्ड भूल गए / डेटा हटाएँ',language:'भाषा',language_sub:'ऐप इंटरफ़ेस भाषा',
+  no_service_yet:'अभी तक कोई सेवा नहीं जोड़ी गई।',no_results:'कोई परिणाम नहीं।',no_convs:'अभी तक कोई बातचीत नहीं।',
+  new_conv:'नई बातचीत',rename:'नाम बदलें',export_md:'Markdown निर्यात करें',
+  send_first:'बातचीत शुरू करने के लिए संदेश भेजें।',reasoning:'🧠 मॉडल का तर्क',
+  edit:'संपादित करें',copy:'कॉपी करें',regenerate:'फिर से बनाएँ',you:'आप',copied:'कॉपी हो गया',
+  tts_unsupported:'TTS समर्थित नहीं',mic_unsupported:'वॉइस इनपुट समर्थित नहीं',select_service:'एक सेवा चुनें',loading_models:'मॉडल लोड हो रहे हैं…',
+  favorites:'★ पसंदीदा',recent:'हाल के',all_n:'सभी ({0})',balance_of:'शेष: {0} में से {1}',balance:'शेष',
+  custom_addr:'कस्टम (मैन्युअल पता)',url_key_required:'URL और कुंजी आवश्यक हैं',saved:'सहेजा गया',
+  del_profile_confirm:'इस सेवा और इसकी बातचीत को हटाएँ?',
+  url_key_needed:'URL और कुंजी दर्ज करें',testing:'परीक्षण हो रहा है…',conn_ok:'कनेक्शन ठीक — {0} मॉडल मिले',
+  failed:'विफल: ',models_error:'मॉडल त्रुटि: ',select_service_first:'पहले एक सेवा चुनें',
+  rename_prompt:'बातचीत का नया नाम:',no_svc_model:'कोई सेवा या मॉडल चयनित नहीं',
+  error_prefix:'⚠️ त्रुटि: ',title_req:'इस अनुरोध के लिए {0} में ३-५ शब्दों का छोटा शीर्षक दें, केवल शीर्षक, बिना उद्धरण:\n\n',
+  offline_msg:'इंटरनेट कनेक्शन टूट गया',file_error:'फ़ाइल त्रुटि: ',write_model_name:'मॉडल नाम लिखें',
+  models_updated:'मॉडल अपडेट हो गए',wrong_pass:'गलत पासवर्ड',lock_enabled:'लॉक सक्षम हुआ',
+  no_lock_active:'लॉक सक्रिय नहीं है',lock_removed:'लॉक हटा दिया गया',gist_token_needed:'अपना GitHub टोकन दर्ज करें',
+  gist_saved:'Gist में सहेजा गया',gist_error:'Gist त्रुटि: ',gist_token_id:'टोकन और Gist ID आवश्यक हैं',
+  gist_replace:'वर्तमान डेटा को Gist सामग्री से बदलें?',gist_missing:'Gist में बैकअप फ़ाइल नहीं मिली',
+  gist_restored:'Gist से पुनर्स्थापित हुआ',backup_dl:'बैकअप डाउनलोड हुआ',replace_data:'वर्तमान डेटा बदलें?',
+  restored:'पुनर्स्थापित हुआ',invalid_file:'अमान्य फ़ाइल',clear_confirm:'सभी डेटा हटाएँ? इसे पूर्ववत नहीं किया जा सकता।',
+  cleared:'सब कुछ मिटा दिया गया',enc_confirm:'एन्क्रिप्टेड डेटा हटाएँ?',
+  set_pass:'लॉक के लिए पासवर्ड चुनें (भूलने पर कुंजियाँ खो जाती हैं):',
+  hint:'भेजने के लिए Enter · नई पंक्ति के लिए Shift+Enter',timeout_err:'कोई प्रतिक्रिया नहीं (समय समाप्त)',
+  net_err:'सर्वर तक पहुँच नहीं (नेटवर्क/CORS)',invalid_key:' — अमान्य कुंजी',wrong_worker_tok:' — गलत Worker टोकन?',
+  waf_page:'सर्वर ने फ़ायरवॉल (WAF) पृष्ठ लौटाया, API प्रतिक्रिया नहीं',
+  bad_response:'सर्वर से अमान्य/खाली प्रतिक्रिया',prompt_name:'इस प्रॉम्प्ट का नाम:',
+  prompt_empty:'सिस्टम टेक्स्ट खाली है',select_prompt:'एक प्रॉम्प्ट चुनें',prompt_deleted:'हटा दिया गया',
+  tokens:'टोकन',chars_n:'{0} अक्षर',user_label:'उपयोगकर्ता',assistant_label:'सहायक',
+  preset_agentrouter_note:'यह सर्वर WAF फ़ायरवॉल के पीछे है; यह CORS प्रॉक्सी से जाता है (स्वतः भरा)। कुंजी: agentrouter.org/console/token',
+  sug1:'तेज़ सॉर्टिंग के लिए पायथन फ़ंक्शन लिखें',sug2:'TCP और UDP के बीच का अंतर सरलता से समझाएँ',
+  sug3:'मीटिंग की अनुवर्ती के लिए पेशेवर ईमेल लिखें',sug4:'कैफ़े के लिए 5 इंस्टाग्राम पोस्ट आइडियाज़ दें'
+},
+zh:{
+  settings:'设置',services:'服务',add_service:'添加服务',conversations:'对话',
+  conv_search_ph:'搜索对话…',new_chat:'新对话',select_model:'选择模型',model_placeholder:'— 模型 —',
+  reload_models:'重新加载模型',chat_settings:'聊天设置',offline_banner:'您处于离线状态 — 无法发送',
+  cs_system_label:'系统提示词（本对话的角色）',cs_system_ph:'例如：你是一个精准且乐于助人的助手…',
+  prompt_lib:'— 提示词库 —',save:'保存',delete:'删除',max_tokens_label:'最大输出 Token（0 = 默认）',
+  welcome_h:'欢迎使用 AnyAPI Chat',welcome_p:'添加服务，选择模型，开始聊天。',
+  down:'向下',add_image:'添加图片',add_file:'添加文件（文本/PDF）',voice_input:'语音输入',
+  input_ph:'输入您的消息…（Enter 发送，Shift+Enter 换行）',send:'发送',stop:'停止',
+  add_service_m:'添加服务',edit_service:'编辑服务',service:'服务',
+  preset_label:'现成服务',preset_ph:'— 从列表中选择或「自定义」 —',custom_name:'自定义名称',
+  name_ph:'例如 AgentRouter',server_url:'服务器地址（Base URL）',api_key:'服务密钥（API Key）',
+  cors_proxy:'CORS 代理（可选）',for_waf:'— 用于 WAF/CORS ·',worker_src:'Worker 源码',
+  profile_note:'地址不要带 <code>/v1</code>。密钥/地址仅存储在本设备上。',
+  test_conn:'测试连接',pick_model:'选择模型',search_model_ph:'搜索模型…',
+  manual_model_ph:'手动输入模型名称（例如 claude-sonnet-4-5）',use:'使用',
+  manual_note:'如果模型列表加载失败，请手动输入模型名称再试一次。',
+  theme:'主题',theme_sub:'浅色或深色外观',dark:'深色',light:'浅色',
+  auto_title:'智能标题',auto_title_sub:'用模型自动生成对话标题',on:'开',off:'关',
+  tts:'朗读回复（TTS）',tts_sub:'回复上的 🔊 按钮',trim_ctx:'缩短上下文',
+  trim_sub:'只向服务器发送最后 N 条消息（0 = 全部）',
+  def_proxy:'默认 CORS 代理',def_proxy_sub:'用于 WAF/CORS 后面的服务器 · <code>{url}</code> 会被替换',
+  worker_token:'Worker 安全令牌',worker_token_sub:'如果在 Worker 中设置了，请在这里填写，以便只有此应用能使用',
+  secret_ph:'一个秘密字符串',security_lock:'安全锁（加密密钥）',
+  security_lock_sub:'API 密钥用密码加密（AES-GCM），打开应用时需输入密码',
+  enable_lock:'启用锁',remove_lock:'移除锁',gist_sync:'GitHub Gist 同步',
+  gist_sync_sub:'在私有 Gist 中保存/恢复备份（需要 gist 权限的 Personal Access Token）',
+  gist_id_ph:'Gist ID（留空 = 上传时新建）',gist_push:'⬆ 上传',gist_pull:'⬇ 拉取',
+  backup:'备份',backup_sub:'将所有内容保存到一个文件',dl_backup:'下载备份',
+  restore:'恢复',restore_sub:'导入备份文件',pick_file:'选择文件',
+  clear_all:'清除所有',clear_all_sub:'永久删除所有数据',clear:'清除',
+  version_note:'版本 {0} · 所有数据仅存储在本设备上',
+  lock_prompt:'输入密码以解锁应用',pass_ph:'密码',unlock:'解锁',
+  forgot_reset:'忘记密码 / 清除数据',language:'语言',language_sub:'界面语言',
+  no_service_yet:'尚未添加服务。',no_results:'没有结果。',no_convs:'暂无对话。',
+  new_conv:'新对话',rename:'重命名',export_md:'导出 Markdown',
+  send_first:'发送一条消息开始对话。',reasoning:'🧠 模型推理',
+  edit:'编辑',copy:'复制',regenerate:'重新生成',you:'您',copied:'已复制',
+  tts_unsupported:'不支持 TTS',mic_unsupported:'不支持语音输入',select_service:'请选择一个服务',loading_models:'正在加载模型…',
+  favorites:'★ 收藏',recent:'最近',all_n:'全部（{0}）',balance_of:'余额：{0} / {1}',balance:'余额',
+  custom_addr:'自定义（手动地址）',url_key_required:'URL 和密钥为必填项',saved:'已保存',
+  del_profile_confirm:'删除此服务及其对话？',
+  url_key_needed:'请输入 URL 和密钥',testing:'正在测试…',conn_ok:'连接成功 — 找到 {0} 个模型',
+  failed:'失败：',models_error:'模型错误：',select_service_first:'请先选择一个服务',
+  rename_prompt:'对话新名称：',no_svc_model:'未选择服务或模型',
+  error_prefix:'⚠️ 错误：',title_req:'请为这个请求用{0}给出一个 3-5 个词的简短标题，只要标题，不要引号：\n\n',
+  offline_msg:'互联网连接已断开',file_error:'文件错误：',write_model_name:'请输入模型名称',
+  models_updated:'模型已更新',wrong_pass:'密码错误',lock_enabled:'锁已启用',
+  no_lock_active:'锁未启用',lock_removed:'锁已移除',gist_token_needed:'请输入您的 GitHub 令牌',
+  gist_saved:'已保存到 Gist',gist_error:'Gist 错误：',gist_token_id:'需要令牌和 Gist ID',
+  gist_replace:'用 Gist 内容替换当前数据？',gist_missing:'Gist 中未找到备份文件',
+  gist_restored:'已从 Gist 恢复',backup_dl:'备份已下载',replace_data:'替换当前数据？',
+  restored:'已恢复',invalid_file:'无效文件',clear_confirm:'删除所有数据？此操作无法撤销。',
+  cleared:'已清除所有内容',enc_confirm:'删除加密数据？',
+  set_pass:'为锁设置一个密码（忘记密码将丢失密钥）：',
+  hint:'Enter 发送 · Shift+Enter 换行',timeout_err:'无响应（超时）',
+  net_err:'无法访问服务器（网络/CORS）',invalid_key:' — 密钥无效',wrong_worker_tok:' — Worker 令牌错误？',
+  waf_page:'服务器返回了防火墙（WAF）页面，而非 API 响应',
+  bad_response:'服务器响应无效/为空',prompt_name:'此提示词名称：',
+  prompt_empty:'系统文本为空',select_prompt:'请选择提示词',prompt_deleted:'已删除',
+  tokens:'Token',chars_n:'{0} 个字符',user_label:'用户',assistant_label:'助手',
+  preset_agentrouter_note:'该服务器在 WAF 防火墙后面；通过 CORS 代理访问（已自动填写）。密钥：agentrouter.org/console/token',
+  sug1:'写一个快速排序的 Python 函数',sug2:'简单解释 TCP 和 UDP 的区别',
+  sug3:'写一封会议跟进的专业邮件',sug4:'给一家咖啡馆 5 个 Instagram 帖子创意'
+},
+ja:{
+  settings:'設定',services:'サービス',add_service:'サービスを追加',conversations:'会話',
+  conv_search_ph:'会話を検索…',new_chat:'新しい会話',select_model:'モデルを選択',model_placeholder:'— モデル —',
+  reload_models:'モデルを再読み込み',chat_settings:'チャット設定',offline_banner:'オフラインです — 送信できません',
+  cs_system_label:'システムプロンプト（この会話の役割）',cs_system_ph:'例：あなたは正確で親切なアシスタントです…',
+  prompt_lib:'— プロンプトライブラリ —',save:'保存',delete:'削除',max_tokens_label:'最大出力トークン（0 = デフォルト）',
+  welcome_h:'AnyAPI Chat へようこそ',welcome_p:'サービスを追加し、モデルを選んで会話を始めましょう。',
+  down:'下へ',add_image:'画像を追加',add_file:'ファイルを追加（テキスト/PDF）',voice_input:'音声入力',
+  input_ph:'メッセージを入力…（Enterで送信、Shift+Enterで改行）',send:'送信',stop:'停止',
+  add_service_m:'サービスを追加',edit_service:'サービスを編集',service:'サービス',
+  preset_label:'既製サービス',preset_ph:'— リストから選択または「カスタム」 —',custom_name:'カスタム名',
+  name_ph:'例：AgentRouter',server_url:'サーバーアドレス（ベースURL）',api_key:'サービスキー（API Key）',
+  cors_proxy:'CORS プロキシ（任意）',for_waf:'— WAF/CORS 用 ·',worker_src:'Worker ソース',
+  profile_note:'<code>/v1</code> なしでアドレスを入力してください。キー/アドレスはこのデバイスにのみ保存されます。',
+  test_conn:'接続テスト',pick_model:'モデルを選択',search_model_ph:'モデルを検索…',
+  manual_model_ph:'モデル名を手入力（例：claude-sonnet-4-5）',use:'使用',
+  manual_note:'モデル一覧が表示されない場合は、モデル名を手入力してチャットを試してください。',
+  theme:'テーマ',theme_sub:'ライトまたはダーク表示',dark:'ダーク',light:'ライト',
+  auto_title:'スマートタイトル',auto_title_sub:'モデルで会話タイトルを自動生成',on:'オン',off:'オフ',
+  tts:'回答を読み上げ（TTS）',tts_sub:'回答の 🔊 ボタン',trim_ctx:'コンテキスト短縮',
+  trim_sub:'最後の N 件だけサーバーに送信（0 = すべて）',
+  def_proxy:'デフォルトの CORS プロキシ',def_proxy_sub:'WAF/CORS の後ろのサーバー用 · <code>{url}</code> が置換されます',
+  worker_token:'Worker セキュリティトークン',worker_token_sub:'Worker で設定した場合、ここにも入力するとこのアプリだけが使用できます',
+  secret_ph:'秘密の文字列',security_lock:'セキュリティロック（キーを暗号化）',
+  security_lock_sub:'API キーはパスワードで暗号化（AES-GCM）され、アプリ起動時に要求されます',
+  enable_lock:'ロックを有効化',remove_lock:'ロックを解除',gist_sync:'GitHub Gist 同期',
+  gist_sync_sub:'非公開 Gist にバックアップを保存/復元（gist スコープの Personal Access Token が必要）',
+  gist_id_ph:'Gist ID（空 = アップロード時に新規作成）',gist_push:'⬆ アップロード',gist_pull:'⬇ 取得',
+  backup:'バックアップ',backup_sub:'すべてを1つのファイルに保存',dl_backup:'バックアップをダウンロード',
+  restore:'復元',restore_sub:'バックアップファイルをインポート',pick_file:'ファイルを選択',
+  clear_all:'すべて消去',clear_all_sub:'すべてのデータを完全に削除',clear:'消去',
+  version_note:'バージョン {0} · すべてのデータはこのデバイスにのみ保存されます',
+  lock_prompt:'アプリを開くにはパスワードを入力してください',pass_ph:'パスワード',unlock:'ロック解除',
+  forgot_reset:'パスワードを忘れた / データ削除',language:'言語',language_sub:'アプリの表示言語',
+  no_service_yet:'まだサービスが追加されていません。',no_results:'結果がありません。',no_convs:'会話はまだありません。',
+  new_conv:'新しい会話',rename:'名前を変更',export_md:'Markdown でエクスポート',
+  send_first:'メッセージを送信して会話を始めましょう。',reasoning:'🧠 モデルの推論',
+  edit:'編集',copy:'コピー',regenerate:'再生成',you:'あなた',copied:'コピーしました',
+  tts_unsupported:'TTS はサポートされていません',mic_unsupported:'音声入力はサポートされていません',select_service:'サービスを選択してください',loading_models:'モデルを読み込み中…',
+  favorites:'★ お気に入り',recent:'最近',all_n:'すべて（{0}）',balance_of:'残高：{0} / {1}',balance:'残高',
+  custom_addr:'カスタム（手動アドレス）',url_key_required:'URL とキーは必須です',saved:'保存しました',
+  del_profile_confirm:'このサービスとその会話を削除しますか？',
+  url_key_needed:'URL とキーを入力してください',testing:'テスト中…',conn_ok:'接続成功 — {0} 個のモデルが見つかりました',
+  failed:'失敗：',models_error:'モデルエラー：',select_service_first:'最初にサービスを選択してください',
+  rename_prompt:'会話の新しい名前：',no_svc_model:'サービスまたはモデルが選択されていません',
+  error_prefix:'⚠️ エラー：',title_req:'このリクエストに{0}で3〜5語の短いタイトルを付けてください。タイトルだけ、引用符なしで：\n\n',
+  offline_msg:'インターネット接続が切断されました',file_error:'ファイルエラー：',write_model_name:'モデル名を入力してください',
+  models_updated:'モデルを更新しました',wrong_pass:'パスワードが違います',lock_enabled:'ロックを有効にしました',
+  no_lock_active:'ロックは有効ではありません',lock_removed:'ロックを解除しました',gist_token_needed:'GitHub トークンを入力してください',
+  gist_saved:'Gist に保存しました',gist_error:'Gist エラー：',gist_token_id:'トークンと Gist ID が必要です',
+  gist_replace:'現在のデータを Gist の内容で置き換えますか？',gist_missing:'Gist にバックアップファイルがありません',
+  gist_restored:'Gist から復元しました',backup_dl:'バックアップをダウンロードしました',replace_data:'現在のデータを置き換えますか？',
+  restored:'復元しました',invalid_file:'無効なファイルです',clear_confirm:'すべてのデータを削除しますか？元に戻せません。',
+  cleared:'すべて消去しました',enc_confirm:'暗号化されたデータを削除しますか？',
+  set_pass:'ロック用のパスワードを設定してください（忘れるとキーが失われます）：',
+  hint:'Enter で送信 · Shift+Enter で改行',timeout_err:'応答なし（タイムアウト）',
+  net_err:'サーバーに接続できません（ネットワーク/CORS）',invalid_key:' — キーが無効です',wrong_worker_tok:' — Worker トークンが違いますか？',
+  waf_page:'サーバーがファイアウォール（WAF）ページを返しました。API 応答ではありません',
+  bad_response:'サーバーからの応答が無効/空です',prompt_name:'このプロンプトの名前：',
+  prompt_empty:'システムテキストが空です',select_prompt:'プロンプトを選択してください',prompt_deleted:'削除しました',
+  tokens:'トークン',chars_n:'{0} 文字',user_label:'ユーザー',assistant_label:'アシスタント',
+  preset_agentrouter_note:'このサーバーは WAF ファイアウォールの背後にあります。CORS プロキシ経由で接続します（自動入力済み）。キー：agentrouter.org/console/token',
+  sug1:'高速ソートの Python 関数を書く',sug2:'TCP と UDP の違いを簡単に説明する',
+  sug3:'会議のフォローアップのプロフェッショナルなメールを書く',sug4:'カフェ向けの Instagram 投稿アイデアを5つ提案する'
+},
+bn:{
+  settings:'সেটিংস',services:'পরিষেবা',add_service:'পরিষেবা যোগ করুন',conversations:'কথোপকথন',
+  conv_search_ph:'কথোপকথন খুঁজুন…',new_chat:'নতুন চ্যাট',select_model:'মডেল নির্বাচন করুন',model_placeholder:'— মডেল —',
+  reload_models:'মডেল পুনরায় লোড করুন',chat_settings:'চ্যাট সেটিংস',offline_banner:'আপনি অফলাইনে আছেন — পাঠানো সম্ভব নয়',
+  cs_system_label:'সিস্টেম প্রম্পট (এই চ্যাটের ভূমিকা)',cs_system_ph:'যেমন: আপনি একজন নির্ভুল ও সহায়ক সহকারী…',
+  prompt_lib:'— প্রম্পট লাইব্রেরি —',save:'সংরক্ষণ',delete:'মুছুন',max_tokens_label:'সর্বোচ্চ আউটপুট টোকেন (০ = ডিফল্ট)',
+  welcome_h:'AnyAPI Chat-এ স্বাগতম',welcome_p:'একটি পরিষেবা যোগ করুন, মডেল বেছে নিন এবং চ্যাট শুরু করুন।',
+  down:'নিচে',add_image:'ছবি যোগ করুন',add_file:'ফাইল যোগ করুন (টেক্সট/PDF)',voice_input:'ভয়েস ইনপুট',
+  input_ph:'আপনার বার্তা লিখুন… (পাঠাতে Enter, নতুন লাইনে Shift+Enter)',send:'পাঠান',stop:'থামান',
+  add_service_m:'পরিষেবা যোগ করুন',edit_service:'পরিষেবা সম্পাদনা',service:'পরিষেবা',
+  preset_label:'প্রস্তুত পরিষেবা',preset_ph:'— তালিকা থেকে বেছে নিন বা «কাস্টম» —',custom_name:'কাস্টম নাম',
+  name_ph:'যেমন AgentRouter',server_url:'সার্ভার ঠিকানা (Base URL)',api_key:'পরিষেবা কী (API Key)',
+  cors_proxy:'CORS প্রক্সি (ঐচ্ছিক)',for_waf:'— WAF/CORS-এর জন্য ·',worker_src:'Worker সোর্স',
+  profile_note:'<code>/v1</code> ছাড়া ঠিকানা লিখুন। কী/ঠিকানা শুধুমাত্র এই ডিভাইসে সংরক্ষিত হয়।',
+  test_conn:'সংযোগ পরীক্ষা',pick_model:'মডেল নির্বাচন করুন',search_model_ph:'মডেল খুঁজুন…',
+  manual_model_ph:'মডেলের নাম ম্যানুয়ালি লিখুন (যেমন claude-sonnet-4-5)',use:'ব্যবহার করুন',
+  manual_note:'মডেল তালিকা না এলে মডেলের নাম ম্যানুয়ালি লিখে চ্যাট চেষ্টা করুন।',
+  theme:'থিম',theme_sub:'হালকা বা গাঢ় রূপ',dark:'গাঢ়',light:'হালকা',
+  auto_title:'স্মার্ট শিরোনাম',auto_title_sub:'মডেল দিয়ে স্বয়ংক্রিয়ভাবে শিরোনাম তৈরি',on:'চালু',off:'বন্ধ',
+  tts:'উত্তর পড়ুন (TTS)',tts_sub:'উত্তরে 🔊 বাটন',trim_ctx:'কনটেক্সট সংক্ষিপ্তকরণ',
+  trim_sub:'শুধুমাত্র শেষ N বার্তা সার্ভারে পাঠান (০ = সব)',
+  def_proxy:'ডিফল্ট CORS প্রক্সি',def_proxy_sub:'WAF/CORS-এর পেছনের সার্ভারের জন্য · <code>{url}</code> প্রতিস্থাপিত হয়',
+  worker_token:'Worker নিরাপত্তা টোকেন',worker_token_sub:'Worker-এ সেট করলে এখানেও দিন যাতে শুধু এই অ্যাপ এটি ব্যবহার করতে পারে',
+  secret_ph:'একটি গোপন স্ট্রিং',security_lock:'নিরাপত্তা লক (কী এনক্রিপ্ট হয়)',
+  security_lock_sub:'API কীগুলো পাসওয়ার্ড দিয়ে এনক্রিপ্ট হয় (AES-GCM) এবং অ্যাপ খোলার সময় চাওয়া হয়',
+  enable_lock:'লক সক্রিয় করুন',remove_lock:'লক সরান',gist_sync:'GitHub Gist সিঙ্ক',
+  gist_sync_sub:'ব্যক্তিগত Gist-এ ব্যাকআপ সংরক্ষণ/পুনরুদ্ধার (gist স্কোপসহ Personal Access Token প্রয়োজন)',
+  gist_id_ph:'Gist ID (খালি = আপলোডে নতুন তৈরি)',gist_push:'⬆ আপলোড',gist_pull:'⬇ আনা',
+  backup:'ব্যাকআপ',backup_sub:'সবকিছু এক ফাইলে সংরক্ষণ',dl_backup:'ব্যাকআপ ডাউনলোড',
+  restore:'পুনরুদ্ধার',restore_sub:'ব্যাকআপ ফাইল আমদানি',pick_file:'ফাইল নির্বাচন',
+  clear_all:'সব মুছুন',clear_all_sub:'সব ডেটা স্থায়ীভাবে মুছুন',clear:'মুছুন',
+  version_note:'সংস্করণ {0} · সব ডেটা শুধুমাত্র এই ডিভাইসে সংরক্ষিত থাকে',
+  lock_prompt:'অ্যাপ খুলতে পাসওয়ার্ড লিখুন',pass_ph:'পাসওয়ার্ড',unlock:'খুলুন',
+  forgot_reset:'পাসওয়ার্ড ভুলে গেছি / ডেটা মুছুন',language:'ভাষা',language_sub:'অ্যাপ ইন্টারফেস ভাষা',
+  no_service_yet:'এখনও কোনো পরিষেবা যোগ হয়নি।',no_results:'কোনো ফলাফল নেই।',no_convs:'এখনও কোনো কথোপকথন নেই।',
+  new_conv:'নতুন কথোপকথন',rename:'নাম পরিবর্তন',export_md:'Markdown এক্সপোর্ট',
+  send_first:'কথোপকথন শুরু করতে একটি বার্তা পাঠান।',reasoning:'🧠 মডেলের যুক্তি',
+  edit:'সম্পাদনা',copy:'কপি',regenerate:'পুনরায় তৈরি',you:'আপনি',copied:'কপি হয়েছে',
+  tts_unsupported:'TTS সমর্থিত নয়',mic_unsupported:'ভয়েস ইনপুট সমর্থিত নয়',select_service:'একটি পরিষেবা নির্বাচন করুন',loading_models:'মডেল লোড হচ্ছে…',
+  favorites:'★ পছন্দের',recent:'সম্প্রতি',all_n:'সব ({0})',balance_of:'ব্যালেন্স: {0} থেকে {1}',balance:'ব্যালেন্স',
+  custom_addr:'কাস্টম (ম্যানুয়াল ঠিকানা)',url_key_required:'URL এবং কী আবশ্যক',saved:'সংরক্ষিত হয়েছে',
+  del_profile_confirm:'এই পরিষেবা ও এর কথোপকথন মুছবেন?',
+  url_key_needed:'URL এবং কী লিখুন',testing:'পরীক্ষা হচ্ছে…',conn_ok:'সংযোগ সফল — {0}টি মডেল পাওয়া গেছে',
+  failed:'ব্যর্থ: ',models_error:'মডেল ত্রুটি: ',select_service_first:'আগে একটি পরিষেবা নির্বাচন করুন',
+  rename_prompt:'কথোপকথনের নতুন নাম:',no_svc_model:'কোনো পরিষেবা বা মডেল নির্বাচিত নেই',
+  error_prefix:'⚠️ ত্রুটি: ',title_req:'এই অনুরোধের জন্য {0} ভাষায় ৩-৫ শব্দের সংক্ষিপ্ত শিরোনাম দিন, শুধু শিরোনাম, উদ্ধৃতি ছাড়া:\n\n',
+  offline_msg:'ইন্টারনেট সংযোগ বিচ্ছিন্ন',file_error:'ফাইল ত্রুটি: ',write_model_name:'মডেলের নাম লিখুন',
+  models_updated:'মডেল আপডেট হয়েছে',wrong_pass:'ভুল পাসওয়ার্ড',lock_enabled:'লক সক্রিয় হয়েছে',
+  no_lock_active:'লক সক্রিয় নেই',lock_removed:'লক সরানো হয়েছে',gist_token_needed:'আপনার GitHub টোকেন লিখুন',
+  gist_saved:'Gist-এ সংরক্ষিত হয়েছে',gist_error:'Gist ত্রুটি: ',gist_token_id:'টোকেন ও Gist ID প্রয়োজন',
+  gist_replace:'বর্তমান ডেটা Gist-এর বিষয়বস্তু দিয়ে প্রতিস্থাপন করবেন?',gist_missing:'Gist-এ ব্যাকআপ ফাইল পাওয়া যায়নি',
+  gist_restored:'Gist থেকে পুনরুদ্ধার হয়েছে',backup_dl:'ব্যাকআপ ডাউনলোড হয়েছে',replace_data:'বর্তমান ডেটা প্রতিস্থাপন করবেন?',
+  restored:'পুনরুদ্ধার হয়েছে',invalid_file:'অবৈধ ফাইল',clear_confirm:'সব ডেটা মুছবেন? এটি ফিরিয়ে আনা যাবে না।',
+  cleared:'সব মুছে ফেলা হয়েছে',enc_confirm:'এনক্রিপ্টেড ডেটা মুছবেন?',
+  set_pass:'লকের জন্য একটি পাসওয়ার্ড দিন (ভুলে গেলে কী হারিয়ে যাবে):',
+  hint:'পাঠাতে Enter · নতুন লাইনে Shift+Enter',timeout_err:'কোনো সাড়া নেই (টাইমআউট)',
+  net_err:'সার্ভারে প্রবেশ করা যায়নি (নেটওয়ার্ক/CORS)',invalid_key:' — অবৈধ কী',wrong_worker_tok:' — ভুল Worker টোকেন?',
+  waf_page:'সার্ভার একটি ফায়ারওয়াল (WAF) পৃষ্ঠা ফিরিয়ে দিয়েছে, API উত্তর নয়',
+  bad_response:'সার্ভার থেকে অবৈধ/খালি উত্তর',prompt_name:'এই প্রম্পটের নাম:',
+  prompt_empty:'সিস্টেম টেক্সট খালি',select_prompt:'একটি প্রম্পট নির্বাচন করুন',prompt_deleted:'মুছে ফেলা হয়েছে',
+  tokens:'টোকেন',chars_n:'{0} অক্ষর',user_label:'ব্যবহারকারী',assistant_label:'সহকারী',
+  preset_agentrouter_note:'এই সার্ভার WAF ফায়ারওয়ালের পেছনে; এটি CORS প্রক্সি দিয়ে যায় (স্বয়ংক্রিয়ভাবে ভরা)। কী: agentrouter.org/console/token',
+  sug1:'দ্রুত সাজানোর জন্য একটি পাইথন ফাংশন লিখুন',sug2:'TCP ও UDP-এর পার্থক্য সহজভাবে ব্যাখ্যা করুন',
+  sug3:'মিটিং অনুসরণের জন্য একটি পেশাদার ইমেইল লিখুন',sug4:'একটি ক্যাফের জন্য ৫টি ইনস্টাগ্রাম পোস্ট আইডিয়া দিন'
+},
+tr:{
+  settings:'Ayarlar',services:'Servisler',add_service:'Servis ekle',conversations:'Sohbetler',
+  conv_search_ph:'Sohbetlerde ara…',new_chat:'Yeni sohbet',select_model:'Model seç',model_placeholder:'— Model —',
+  reload_models:'Modelleri yenile',chat_settings:'Sohbet ayarları',offline_banner:'Çevrimdışısınız — gönderim yapılamaz',
+  cs_system_label:'Sistem promptu (bu sohbetin rolü)',cs_system_ph:'Örn: sen hassas ve yardımsever bir asistansın…',
+  prompt_lib:'— Prompt kütüphanesi —',save:'Kaydet',delete:'Sil',max_tokens_label:'Maks. çıktı tokenı (0 = varsayılan)',
+  welcome_h:'AnyAPI Chat’e hoş geldiniz',welcome_p:'Bir servis ekleyin, model seçin ve sohbete başlayın.',
+  down:'Aşağı',add_image:'Görsel ekle',add_file:'Dosya ekle (metin/PDF)',voice_input:'Sesli giriş',
+  input_ph:'Mesajınızı yazın… (göndermek için Enter, yeni satır için Shift+Enter)',send:'Gönder',stop:'Durdur',
+  add_service_m:'Servis ekle',edit_service:'Servisi düzenle',service:'Servis',
+  preset_label:'Hazır servis',preset_ph:'— Listeden seçin veya «Özel» —',custom_name:'Özel ad',
+  name_ph:'örn. AgentRouter',server_url:'Sunucu adresi (Base URL)',api_key:'Web servis anahtarı (API Key)',
+  cors_proxy:'CORS Proxy (isteğe bağlı)',for_waf:'— WAF/CORS için ·',worker_src:'Worker kaynağı',
+  profile_note:'Adresi <code>/v1</code> olmadan girin. Anahtar/adres yalnızca bu cihazda saklanır.',
+  test_conn:'Bağlantıyı test et',pick_model:'Model seç',search_model_ph:'Model ara…',
+  manual_model_ph:'Model adını elle girin (örn. claude-sonnet-4-5)',use:'Kullan',
+  manual_note:'Model listesi gelmezse model adını elle yazın ve sohbeti deneyin.',
+  theme:'Tema',theme_sub:'Açık veya koyu görünüm',dark:'Koyu',light:'Açık',
+  auto_title:'Akıllı başlıklar',auto_title_sub:'Modelle sohbet başlığını otomatik oluştur',on:'Açık',off:'Kapalı',
+  tts:'Yanıtları oku (TTS)',tts_sub:'Yanıtlarda 🔊 düğmesi',trim_ctx:'Bağlam kısaltma',
+  trim_sub:'Sunucuya yalnızca son N mesaj gönderilsin (0 = tümü)',
+  def_proxy:'Varsayılan CORS proxy',def_proxy_sub:'WAF/CORS arkasındaki sunucular için · <code>{url}</code> değiştirilir',
+  worker_token:'Worker güvenlik anahtarı',worker_token_sub:'Worker’da ayarladıysanız buraya da girin; böylece Worker’ı yalnızca bu uygulama kullanabilir',
+  secret_ph:'Gizli bir dize',security_lock:'Güvenlik kilidi (anahtarları şifreler)',
+  security_lock_sub:'API anahtarları (AES-GCM) bir parolayla şifrelenir ve uygulama açılırken sorulur',
+  enable_lock:'Kilidi etkinleştir',remove_lock:'Kilidi kaldır',gist_sync:'GitHub Gist senkronizasyonu',
+  gist_sync_sub:'Yedeği özel bir Gist’te sakla/geri yükle (gist kapsamlı Personal Access Token gerekir)',
+  gist_id_ph:'Gist ID (boş = yüklerken yeni oluştur)',gist_push:'⬆ Yükle',gist_pull:'⬇ Çek',
+  backup:'Yedekleme',backup_sub:'Her şeyi tek dosyaya kaydet',dl_backup:'Yedeği indir',
+  restore:'Geri yükle',restore_sub:'Yedek dosyası içe aktar',pick_file:'Dosya seç',
+  clear_all:'Her şeyi sil',clear_all_sub:'Tüm verileri tamamen kaldır',clear:'Sil',
+  version_note:'Sürüm {0} · tüm veriler bu cihazda saklanır.',
+  lock_prompt:'Uygulamayı açmak için parolayı girin',pass_ph:'Parola',unlock:'Aç',
+  forgot_reset:'Parolayı unuttum / verileri sil',language:'Dil',language_sub:'Uygulama arayüz dili',
+  no_service_yet:'Henüz servis eklenmedi.',no_results:'Sonuç yok.',no_convs:'Sohbet yok.',
+  new_conv:'Yeni sohbet',rename:'Yeniden adlandır',export_md:'Markdown dışa aktar',
+  send_first:'Sohbeti başlatmak için bir mesaj gönderin.',reasoning:'🧠 Model muhakemesi',
+  edit:'Düzenle',copy:'Kopyala',regenerate:'Yeniden üret',you:'Sen',copied:'Kopyalandı',
+  tts_unsupported:'TTS desteklenmiyor',mic_unsupported:'Sesli giriş desteklenmiyor',select_service:'Bir servis seçin',loading_models:'Modeller yükleniyor…',
+  favorites:'★ Favoriler',recent:'Son',all_n:'Tümü ({0})',balance_of:'Bakiye: {0} / {1}',balance:'Bakiye',
+  custom_addr:'Özel (manuel adres)',url_key_required:'Adres ve anahtar zorunlu',saved:'Kaydedildi',
+  del_profile_confirm:'Bu servis ve sohbetleri silinsin mi?',
+  url_key_needed:'Adresi ve anahtarı girin',testing:'Test ediliyor…',conn_ok:'Bağlantı başarılı — {0} model bulundu',
+  failed:'Başarısız: ',models_error:'Model hatası: ',select_service_first:'Önce bir servis seçin',
+  rename_prompt:'Sohbetin yeni adı:',no_svc_model:'Servis veya model seçilmedi',
+  error_prefix:'⚠️ Hata: ',title_req:'Bu istek için 3-5 kelimelik kısa bir başlık {0} ver, yalnızca başlık, tırnaksız:\n\n',
+  offline_msg:'İnternet bağlantısı kesildi',file_error:'Dosya hatası: ',write_model_name:'Model adını yazın',
+  models_updated:'Modeller güncellendi',wrong_pass:'Parola hatalı',lock_enabled:'Kilit etkinleştirildi',
+  no_lock_active:'Kilit aktif değil',lock_removed:'Kilit kaldırıldı',gist_token_needed:'GitHub anahtarını girin',
+  gist_saved:'Gist’e kaydedildi',gist_error:'Gist hatası: ',gist_token_id:'Anahtar ve Gist ID gerekli',
+  gist_replace:'Mevcut veriler Gist içeriğiyle değiştirilsin mi?',gist_missing:'Gist’te yedek dosyası yok',
+  gist_restored:'Gist’ten geri yüklendi',backup_dl:'Yedek indirildi',replace_data:'Mevcut veriler değiştirilsin mi?',
+  restored:'Geri yüklendi',invalid_file:'Geçersiz dosya',clear_confirm:'Tüm veriler silinsin mi? Bu geri alınamaz.',
+  cleared:'Her şey silindi',enc_confirm:'Şifrelenmiş veriler silinsin mi?',
+  set_pass:'Kilit için bir parola belirleyin (unutursanız anahtarlar kaybolur):',
+  hint:'Göndermek için Enter · yeni satır için Shift+Enter',timeout_err:'Yanıt yok (timeout)',
+  net_err:'Sunucuya erişilemiyor (ağ/CORS)',invalid_key:' — geçersiz anahtar',wrong_worker_tok:' — hatalı Worker anahtarı?',
+  waf_page:'Sunucu bir güvenlik duvarı (WAF) sayfası döndürdü, API yanıtı değil',
+  bad_response:'Geçersiz/boş sunucu yanıtı',prompt_name:'Bu promptun adı:',
+  prompt_empty:'Sistem metni boş',select_prompt:'Bir prompt seçin',prompt_deleted:'Silindi',
+  tokens:'Token',chars_n:'{0} karakter',user_label:'Kullanıcı',assistant_label:'Asistan',
+  preset_agentrouter_note:'Bu sunucu WAF güvenlik duvarının arkasında; CORS proxy üzerinden geçer (otomatik doldurulur). Anahtar: agentrouter.org/console/token',
+  sug1:'Hızlı sıralama için bir Python fonksiyonu yaz',sug2:'TCP ve UDP arasındaki farkı basitçe açıkla',
+  sug3:'Toplantı takibi için profesyonel bir e-posta yaz',sug4:'Bir kafe için 5 Instagram gönderi fikri ver'
+},
+ur:{
+  settings:'ترتیبات',services:'خدمات',add_service:'سروس شامل کریں',conversations:'گفتگو',
+  conv_search_ph:'گفتگو تلاش کریں…',new_chat:'نئی گفتگو',select_model:'ماڈل منتخب کریں',model_placeholder:'— ماڈل —',
+  reload_models:'ماڈلز دوبارہ لوڈ کریں',chat_settings:'گفتگو کی ترتیبات',offline_banner:'آپ آف لائن ہیں — بھیجنا ممکن نہیں',
+  cs_system_label:'سسٹم پرامپٹ (اس گفتگو کا کردار)',cs_system_ph:'مثلاً: آپ ایک درست اور مددگار معاون ہیں…',
+  prompt_lib:'— پرامپٹ لائبریری —',save:'محفوظ',delete:'حذف',max_tokens_label:'زیادہ سے زیادہ آؤٹ پٹ ٹوکن (۰ = پہلے سے طے شدہ)',
+  welcome_h:'AnyAPI Chat میں خوش آمدید',welcome_p:'ایک سروس شامل کریں، ماڈل منتخب کریں اور گفتگو شروع کریں۔',
+  down:'نیچے',add_image:'تصویر شامل کریں',add_file:'فائل شامل کریں (متن/PDF)',voice_input:'صوتی ان پٹ',
+  input_ph:'اپنا پیغام لکھیں… (بھیجنے کے لیے Enter، نئی سطر کے لیے Shift+Enter)',send:'بھیجیں',stop:'رکیں',
+  add_service_m:'سروس شامل کریں',edit_service:'سروس میں ترمیم کریں',service:'سروس',
+  preset_label:'تیار سروس',preset_ph:'— فہرست سے منتخب کریں یا «اپنی مرضی» —',custom_name:'اپنی مرضی کا نام',
+  name_ph:'مثلاً AgentRouter',server_url:'سرور کا پتہ (Base URL)',api_key:'ویب سروس کلید (API Key)',
+  cors_proxy:'CORS Proxy (اختیاری)',for_waf:'— WAF/CORS کے لیے ·',worker_src:'Worker سورس',
+  profile_note:'پتہ <code>/v1</code> کے بغیر درج کریں۔ کلید/پتہ صرف اسی ڈیوائس پر محفوظ ہوتی ہے۔',
+  test_conn:'کنکشن ٹیسٹ کریں',pick_model:'ماڈل منتخب کریں',search_model_ph:'ماڈل تلاش کریں…',
+  manual_model_ph:'ماڈل کا نام دستی لکھیں (مثلاً claude-sonnet-4-5)',use:'استعمال کریں',
+  manual_note:'اگر ماڈل کی فہرست نہ آئے تو ماڈل کا نام دستی لکھ کر چیٹ آزمائیں۔',
+  theme:'تھیم',theme_sub:'روشن یا تاریک شکل',dark:'تاریک',light:'روشن',
+  auto_title:'ذہین عنوانات',auto_title_sub:'ماڈل سے خودکار گفتگو کا عنوان بنائیں',on:'آن',off:'آف',
+  tts:'جوابات پڑھیں (TTS)',tts_sub:'جوابات پر 🔊 بٹن',trim_ctx:'متن کی کمی',
+  trim_sub:'سرور کو صرف آخری N پیغام بھیجیں (۰ = تمام)',
+  def_proxy:'پہلے سے طے شدہ CORS proxy',def_proxy_sub:'WAF/CORS کے پیچھے سرورز کے لیے · <code>{url}</code> تبدیل ہوتا ہے',
+  worker_token:'Worker سیکیورٹی ٹوکن',worker_token_sub:'اگر Worker میں سیٹ کیا ہے تو یہاں بھی رکھیں تاکہ صرف یہ ایپ Worker استعمال کر سکے',
+  secret_ph:'ایک خفیہ سٹرنگ',security_lock:'سیکیورٹی لاک (کلیدوں کو خفیہ کرتا ہے)',
+  security_lock_sub:'API کلیدیں (AES-GCM) پاس ورڈ سے خفیہ ہوتی ہیں اور ایپ کھولتے وقت پوچھا جاتا ہے',
+  enable_lock:'لاک فعال کریں',remove_lock:'لاک ہٹائیں',gist_sync:'GitHub Gist ہم آہنگی',
+  gist_sync_sub:'بیک اپ کو نجی Gist میں محفوظ/بازیافت کریں (gist اسکوپ کے ساتھ Personal Access Token درکار)',
+  gist_id_ph:'Gist ID (خالی = اپ لوڈ پر نیا بنائیں)',gist_push:'⬆ بھیجیں',gist_pull:'⬇ حاصل کریں',
+  backup:'بیک اپ',backup_sub:'سب کچھ ایک فائل میں محفوظ کریں',dl_backup:'بیک اپ ڈاؤن لوڈ کریں',
+  restore:'بحال کریں',restore_sub:'بیک اپ فائل درآمد کریں',pick_file:'فائل منتخب کریں',
+  clear_all:'سب حذف کریں',clear_all_sub:'تمام ڈیٹا مکمل طور پر حذف کریں',clear:'حذف کریں',
+  version_note:'ورژن {0} · تمام ڈیٹا اسی ڈیوائس پر محفوظ ہے۔',
+  lock_prompt:'ایپ کھولنے کے لیے پاس ورڈ درج کریں',pass_ph:'پاس ورڈ',unlock:'کھولیں',
+  forgot_reset:'پاس ورڈ بھول گئے / ڈیٹا حذف کریں',language:'زبان',language_sub:'ایپ انٹرفیس زبان',
+  no_service_yet:'ابھی کوئی سروس شامل نہیں۔',no_results:'کوئی نتیجہ نہیں۔',no_convs:'کوئی گفتگو نہیں۔',
+  new_conv:'نئی گفتگو',rename:'نام تبدیل کریں',export_md:'Markdown ایکسپورٹ',
+  send_first:'گفتگو شروع کرنے کے لیے پیغام بھیجیں۔',reasoning:'🧠 ماڈل کی استدلال',
+  edit:'ترمیم',copy:'کاپی',regenerate:'دوبارہ بنائیں',you:'آپ',copied:'کاپی ہو گیا',
+  tts_unsupported:'TTS تعاون یافتہ نہیں',mic_unsupported:'صوتی ان پٹ تعاون یافتہ نہیں',select_service:'ایک سروس منتخب کریں',loading_models:'ماڈلز لوڈ ہو رہے ہیں…',
+  favorites:'★ پسندیدہ',recent:'حالیہ',all_n:'تمام ({0})',balance_of:'بیلنس: {0} از {1}',balance:'بیلنس',
+  custom_addr:'اپنی مرضی (دستی پتہ)',url_key_required:'پتہ اور کلید ضروری ہے',saved:'محفوظ ہو گیا',
+  del_profile_confirm:'یہ سروس اور اس کی گفتگو حذف ہوں؟',
+  url_key_needed:'پتہ اور کلید درج کریں',testing:'ٹیسٹ ہو رہا ہے…',conn_ok:'کنکشن کامیاب — {0} ماڈل ملے',
+  failed:'ناکام: ',models_error:'ماڈلز میں خرابی: ',select_service_first:'پہلے ایک سروس منتخب کریں',
+  rename_prompt:'گفتگو کا نیا نام:',no_svc_model:'سروس یا ماڈل منتخب نہیں',
+  error_prefix:'⚠️ خرابی: ',title_req:'اس درخواست کے لیے {0} میں ۳ تا ۵ الفاظ کا مختصر عنوان دیں، صرف عنوان بغیر اقتباس کے:\n\n',
+  offline_msg:'انٹرنیٹ کنکشن منقطع ہے',file_error:'فائل میں خرابی: ',write_model_name:'ماڈل کا نام لکھیں',
+  models_updated:'ماڈلز اپڈیٹ ہو گئے',wrong_pass:'پاس ورڈ غلط ہے',lock_enabled:'لاک فعال ہو گیا',
+  no_lock_active:'لاک فعال نہیں',lock_removed:'لاک ہٹا دیا گیا',gist_token_needed:'GitHub ٹوکن درج کریں',
+  gist_saved:'Gist میں محفوظ ہو گیا',gist_error:'Gist خرابی: ',gist_token_id:'ٹوکن اور Gist ID درکار ہے',
+  gist_replace:'موجودہ ڈیٹا Gist کے مواد سے بدلا جائے؟',gist_missing:'Gist میں بیک اپ فائل نہیں',
+  gist_restored:'Gist سے بحال ہوا',backup_dl:'بیک اپ ڈاؤن لوڈ ہوا',replace_data:'موجودہ ڈیٹا بدلا جائے؟',
+  restored:'بحال ہو گیا',invalid_file:'غلط فائل',clear_confirm:'تمام ڈیٹا حذف ہو؟ یہ واپس نہیں آ سکتا۔',
+  cleared:'سب حذف ہو گیا',enc_confirm:'خفیہ کردہ ڈیٹا حذف ہو؟',
+  set_pass:'لاک کے لیے پاس ورڈ مقرر کریں (بھول جانے پر کلیدیں ضائع ہو جائیں گی):',
+  hint:'Enter بھیجنے کے لیے · Shift+Enter نئی سطر',timeout_err:'کوئی جواب نہیں (timeout)',
+  net_err:'سرور تک رسائی نہیں (نیٹ ورک/CORS)',invalid_key:' — غلط کلید',wrong_worker_tok:' — غلط Worker ٹوکن؟',
+  waf_page:'سرور نے فائر وال (WAF) صفحہ واپس کیا، API جواب نہیں',
+  bad_response:'غلط/خالی سرور جواب',prompt_name:'اس پرامپٹ کا نام:',
+  prompt_empty:'سسٹم متن خالی ہے',select_prompt:'ایک پرامپٹ منتخب کریں',prompt_deleted:'حذف ہو گیا',
+  tokens:'ٹوکن',chars_n:'{0} حروف',user_label:'صارف',assistant_label:'معاون',
+  preset_agentrouter_note:'یہ سرور WAF فائر وال کے پیچھے ہے؛ CORS پروکسی سے گزرتا ہے (خودکار بھرا گیا)۔ کلید: agentrouter.org/console/token',
+  sug1:'تیز ترتیب کے لیے ایک Python فنکشن لکھیں',sug2:'TCP اور UDP کا فرق آسان الفاظ میں بتائیں',
+  sug3:'میٹنگ فالو اپ کے لیے ایک پیشہ ور ای میل لکھیں',sug4:'ایک کیفے کے لیے ۵ Instagram پوسٹ آئیڈیاز دیں'
+},
+ko:{
+  settings:'설정',services:'서비스',add_service:'서비스 추가',conversations:'대화',
+  conv_search_ph:'대화 검색…',new_chat:'새 대화',select_model:'모델 선택',model_placeholder:'— 모델 —',
+  reload_models:'모델 다시 불러오기',chat_settings:'대화 설정',offline_banner:'오프라인 상태입니다 — 전송할 수 없습니다',
+  cs_system_label:'시스템 프롬프트 (이 대화의 역할)',cs_system_ph:'예: 당신은 정확하고 유용한 도우미입니다…',
+  prompt_lib:'— 프롬프트 라이브러리 —',save:'저장',delete:'삭제',max_tokens_label:'최대 출력 토큰 (0 = 기본값)',
+  welcome_h:'AnyAPI Chat에 오신 것을 환영합니다',welcome_p:'서비스를 추가하고, 모델을 선택하고, 대화를 시작하세요.',
+  down:'아래로',add_image:'이미지 추가',add_file:'파일 추가 (텍스트/PDF)',voice_input:'음성 입력',
+  input_ph:'메시지를 입력하세요… (Enter 전송, Shift+Enter 줄바꿈)',send:'전송',stop:'중지',
+  add_service_m:'서비스 추가',edit_service:'서비스 수정',service:'서비스',
+  preset_label:'준비된 서비스',preset_ph:'— 목록에서 선택 또는 «사용자 지정» —',custom_name:'사용자 지정 이름',
+  name_ph:'예: AgentRouter',server_url:'서버 주소 (Base URL)',api_key:'웹 서비스 키 (API Key)',
+  cors_proxy:'CORS Proxy (선택)',for_waf:'— WAF/CORS용 ·',worker_src:'Worker 소스',
+  profile_note:'<code>/v1</code> 없이 주소를 입력하세요. 키/주소는 이 기기에만 저장됩니다.',
+  test_conn:'연결 테스트',pick_model:'모델 선택',search_model_ph:'모델 검색…',
+  manual_model_ph:'모델 이름을 직접 입력 (예: claude-sonnet-4-5)',use:'사용',
+  manual_note:'모델 목록이 안 나오면 모델 이름을 직접 입력하고 채팅을 시도하세요.',
+  theme:'테마',theme_sub:'밝은 또는 어두운 모드',dark:'어두움',light:'밝음',
+  auto_title:'스마트 제목',auto_title_sub:'모델로 대화 제목 자동 생성',on:'켜짐',off:'꺼짐',
+  tts:'응답 읽기 (TTS)',tts_sub:'응답의 🔊 버튼',trim_ctx:'컨텍스트 축약',
+  trim_sub:'서버에 마지막 N개 메시지만 전송 (0 = 전체)',
+  def_proxy:'기본 CORS 프록시',def_proxy_sub:'WAF/CORS 뒤의 서버용 · <code>{url}</code>로 대체됨',
+  worker_token:'Worker 보안 토큰',worker_token_sub:'Worker에서 설정했다면 여기에도 넣어야 이 앱만 Worker를 사용할 수 있습니다',
+  secret_ph:'비밀 문자열',security_lock:'보안 잠금 (키 암호화)',
+  security_lock_sub:'API 키가 (AES-GCM) 암호로 암호화되고 앱을 열 때 비밀번호를 묻습니다',
+  enable_lock:'잠금 활성화',remove_lock:'잠금 제거',gist_sync:'GitHub Gist 동기화',
+  gist_sync_sub:'백업을 비공개 Gist에 저장/복원 (gist 범위의 Personal Access Token 필요)',
+  gist_id_ph:'Gist ID (비우면 업로드 시 새로 생성)',gist_push:'⬆ 업로드',gist_pull:'⬇ 가져오기',
+  backup:'백업',backup_sub:'모든 것을 한 파일에 저장',dl_backup:'백업 다운로드',
+  restore:'복원',restore_sub:'백업 파일 가져오기',pick_file:'파일 선택',
+  clear_all:'모두 지우기',clear_all_sub:'모든 데이터 완전 삭제',clear:'지우기',
+  version_note:'버전 {0} · 모든 데이터는 이 기기에 저장됩니다.',
+  lock_prompt:'앱을 열려면 비밀번호를 입력하세요',pass_ph:'비밀번호',unlock:'열기',
+  forgot_reset:'비밀번호 분실 / 데이터 삭제',language:'언어',language_sub:'앱 인터페이스 언어',
+  no_service_yet:'아직 추가된 서비스가 없습니다.',no_results:'결과가 없습니다.',no_convs:'대화가 없습니다.',
+  new_conv:'새 대화',rename:'이름 변경',export_md:'Markdown 내보내기',
+  send_first:'대화를 시작하려면 메시지를 보내세요.',reasoning:'🧠 모델 추론',
+  edit:'수정',copy:'복사',regenerate:'다시 생성',you:'당신',copied:'복사됨',
+  tts_unsupported:'TTS가 지원되지 않습니다',mic_unsupported:'음성 입력이 지원되지 않습니다',select_service:'서비스를 선택하세요',loading_models:'모델 불러오는 중…',
+  favorites:'★ 즐겨찾기',recent:'최근',all_n:'전체 ({0})',balance_of:'잔액: {0} / {1}',balance:'잔액',
+  custom_addr:'사용자 지정 (수동 주소)',url_key_required:'주소와 키가 필요합니다',saved:'저장됨',
+  del_profile_confirm:'이 서비스와 그 대화를 삭제할까요?',
+  url_key_needed:'주소와 키를 입력하세요',testing:'테스트 중…',conn_ok:'연결 성공 — {0}개의 모델 발견',
+  failed:'실패: ',models_error:'모델 오류: ',select_service_first:'먼저 서비스를 선택하세요',
+  rename_prompt:'대화의 새 이름:',no_svc_model:'서비스 또는 모델이 선택되지 않음',
+  error_prefix:'⚠️ 오류: ',title_req:'이 요청에 대해 {0} 언어로 3~5단어의 짧은 제목을 주세요, 따옴표 없는 제목만:\n\n',
+  offline_msg:'인터넷 연결이 끊겼습니다',file_error:'파일 오류: ',write_model_name:'모델 이름을 입력하세요',
+  models_updated:'모델이 업데이트됨',wrong_pass:'비밀번호가 틀렸습니다',lock_enabled:'잠금 활성화됨',
+  no_lock_active:'잠금이 활성화되지 않음',lock_removed:'잠금이 제거됨',gist_token_needed:'GitHub 토큰을 입력하세요',
+  gist_saved:'Gist에 저장됨',gist_error:'Gist 오류: ',gist_token_id:'토큰과 Gist ID가 필요합니다',
+  gist_replace:'현재 데이터를 Gist 내용으로 바꿀까요?',gist_missing:'Gist에 백업 파일이 없습니다',
+  gist_restored:'Gist에서 복원됨',backup_dl:'백업 다운로드됨',replace_data:'현재 데이터를 바꿀까요?',
+  restored:'복원됨',invalid_file:'잘못된 파일',clear_confirm:'모든 데이터를 지울까요? 되돌릴 수 없습니다.',
+  cleared:'모두 지워짐',enc_confirm:'암호화된 데이터를 삭제할까요?',
+  set_pass:'잠금용 비밀번호를 설정하세요 (잊으면 키가 손실됩니다):',
+  hint:'Enter 전송 · Shift+Enter 줄바꿈',timeout_err:'응답 없음 (시간 초과)',
+  net_err:'서버에 접근할 수 없음 (네트워크/CORS)',invalid_key:' — 잘못된 키',wrong_worker_tok:' — 잘못된 Worker 토큰?',
+  waf_page:'서버가 방화벽 (WAF) 페이지를 반환했습니다, API 응답이 아님',
+  bad_response:'잘못된/빈 서버 응답',prompt_name:'이 프롬프트의 이름:',
+  prompt_empty:'시스템 텍스트가 비어 있음',select_prompt:'프롬프트를 선택하세요',prompt_deleted:'삭제됨',
+  tokens:'토큰',chars_n:'{0}자',user_label:'사용자',assistant_label:'도우미',
+  preset_agentrouter_note:'이 서버는 WAF 방화벽 뒤에 있습니다. CORS 프록시를 통해 전달됩니다 (자동 채움). 키: agentrouter.org/console/token',
+  sug1:'빠른 정렬을 위한 Python 함수를 작성하세요',sug2:'TCP와 UDP의 차이를 간단히 설명하세요',
+  sug3:'회의 후속 조치를 위한 전문 이메일을 작성하세요',sug4:'카페를 위한 Instagram 게시물 아이디어 5개를 주세요'
+},
+it:{
+  settings:'Impostazioni',services:'Servizi',add_service:'Aggiungi servizio',conversations:'Conversazioni',
+  conv_search_ph:'Cerca nelle conversazioni…',new_chat:'Nuova chat',select_model:'Seleziona modello',model_placeholder:'— Modello —',
+  reload_models:'Ricarica modelli',chat_settings:'Impostazioni chat',offline_banner:'Sei offline — l\'invio non è disponibile',
+  cs_system_label:'System prompt (ruolo di questa chat)',cs_system_ph:'es. Sei un assistente preciso e utile…',
+  prompt_lib:'— Libreria prompt —',save:'Salva',delete:'Elimina',max_tokens_label:'Max token di output (0 = predefinito)',
+  welcome_h:'Benvenuto in AnyAPI Chat',welcome_p:'Aggiungi un servizio, scegli un modello e inizia a chattare.',
+  down:'Giù',add_image:'Aggiungi immagine',add_file:'Aggiungi file (testo/PDF)',voice_input:'Input vocale',
+  input_ph:'Scrivi il tuo messaggio… (Enter invia, Shift+Enter nuova riga)',send:'Invia',stop:'Ferma',
+  add_service_m:'Aggiungi servizio',edit_service:'Modifica servizio',service:'Servizio',
+  preset_label:'Servizio pronto',preset_ph:'— Scegli dalla lista o «Personalizzato» —',custom_name:'Nome personalizzato',
+  name_ph:'es. AgentRouter',server_url:'Indirizzo server (Base URL)',api_key:'Chiave del servizio (API Key)',
+  cors_proxy:'CORS Proxy (opzionale)',for_waf:'— per WAF/CORS ·',worker_src:'Sorgente Worker',
+  profile_note:'Inserisci l\'indirizzo senza <code>/v1</code>. Chiave/indirizzo sono salvati solo su questo dispositivo.',
+  test_conn:'Testa connessione',pick_model:'Seleziona modello',search_model_ph:'Cerca modello…',
+  manual_model_ph:'Inserisci manualmente il nome del modello (es. claude-sonnet-4-5)',use:'Usa',
+  manual_note:'Se l\'elenco dei modelli non appare, digita il nome del modello e prova a chattare.',
+  theme:'Tema',theme_sub:'Aspetto chiaro o scuro',dark:'Scuro',light:'Chiaro',
+  auto_title:'Titoli intelligenti',auto_title_sub:'Genera automaticamente il titolo della conversazione con il modello',on:'On',off:'Off',
+  tts:'Leggi risposte (TTS)',tts_sub:'Pulsante 🔊 sulle risposte',trim_ctx:'Riduzione contesto',
+  trim_sub:'Invia al server solo gli ultimi N messaggi (0 = tutti)',
+  def_proxy:'Proxy CORS predefinito',def_proxy_sub:'Per server dietro WAF/CORS · <code>{url}</code> viene sostituito',
+  worker_token:'Token di sicurezza Worker',worker_token_sub:'Se impostato nel Worker, inseriscilo qui così solo questa app può usarlo',
+  secret_ph:'Una stringa segreta',security_lock:'Blocco di sicurezza (crittografa le chiavi)',
+  security_lock_sub:'Le chiavi API sono crittografate (AES-GCM) con una password e richieste all\'apertura dell\'app',
+  enable_lock:'Attiva blocco',remove_lock:'Rimuovi blocco',gist_sync:'Sincronizzazione GitHub Gist',
+  gist_sync_sub:'Salva/ripristina il backup in un Gist privato (serve un Personal Access Token con scope gist)',
+  gist_id_ph:'Gist ID (vuoto = crea nuovo al caricamento)',gist_push:'⬆ Carica',gist_pull:'⬇ Scarica',
+  backup:'Backup',backup_sub:'Salva tutto in un file',dl_backup:'Scarica backup',
+  restore:'Ripristina',restore_sub:'Importa file di backup',pick_file:'Scegli file',
+  clear_all:'Cancella tutto',clear_all_sub:'Rimozione completa di tutti i dati',clear:'Cancella',
+  version_note:'Versione {0} · tutti i dati sono salvati su questo dispositivo.',
+  lock_prompt:'Inserisci la password per aprire l\'app',pass_ph:'Password',unlock:'Apri',
+  forgot_reset:'Password dimenticata / elimina dati',language:'Lingua',language_sub:'Lingua dell\'interfaccia',
+  no_service_yet:'Nessun servizio aggiunto.',no_results:'Nessun risultato.',no_convs:'Nessuna conversazione.',
+  new_conv:'Nuova conversazione',rename:'Rinomina',export_md:'Esporta Markdown',
+  send_first:'Invia un messaggio per iniziare la conversazione.',reasoning:'🧠 Ragionamento del modello',
+  edit:'Modifica',copy:'Copia',regenerate:'Rigenera',you:'Tu',copied:'Copiato',
+  tts_unsupported:'TTS non supportato',mic_unsupported:'Input vocale non supportato',select_service:'Seleziona un servizio',loading_models:'Caricamento modelli…',
+  favorites:'★ Preferiti',recent:'Recenti',all_n:'Tutti ({0})',balance_of:'Saldo: {0} di {1}',balance:'Saldo',
+  custom_addr:'Personalizzato (indirizzo manuale)',url_key_required:'Indirizzo e chiave sono obbligatori',saved:'Salvato',
+  del_profile_confirm:'Eliminare questo servizio e le sue conversazioni?',
+  url_key_needed:'Inserisci indirizzo e chiave',testing:'Test in corso…',conn_ok:'Connessione riuscita — {0} modelli trovati',
+  failed:'Fallito: ',models_error:'Errore modelli: ',select_service_first:'Seleziona prima un servizio',
+  rename_prompt:'Nuovo nome della conversazione:',no_svc_model:'Servizio o modello non selezionato',
+  error_prefix:'⚠️ Errore: ',title_req:'Dai un titolo breve di 3-5 parole in {0} per questa richiesta, solo il titolo senza virgolette:\n\n',
+  offline_msg:'Connessione internet interrotta',file_error:'Errore file: ',write_model_name:'Scrivi il nome del modello',
+  models_updated:'Modelli aggiornati',wrong_pass:'Password errata',lock_enabled:'Blocco attivato',
+  no_lock_active:'Nessun blocco attivo',lock_removed:'Blocco rimosso',gist_token_needed:'Inserisci il token GitHub',
+  gist_saved:'Salvato su Gist',gist_error:'Errore Gist: ',gist_token_id:'Token e Gist ID necessari',
+  gist_replace:'Sostituire i dati attuali con il contenuto del Gist?',gist_missing:'Nessun file di backup nel Gist',
+  gist_restored:'Ripristinato dal Gist',backup_dl:'Backup scaricato',replace_data:'Sostituire i dati attuali?',
+  restored:'Ripristinato',invalid_file:'File non valido',clear_confirm:'Cancellare tutti i dati? Non è reversibile.',
+  cleared:'Tutto cancellato',enc_confirm:'Eliminare i dati crittografati?',
+  set_pass:'Imposta una password per il blocco (se la dimentichi, le chiavi andranno perse):',
+  hint:'Enter invia · Shift+Enter nuova riga',timeout_err:'Nessuna risposta (timeout)',
+  net_err:'Server irraggiungibile (rete/CORS)',invalid_key:' — chiave non valida',wrong_worker_tok:' — token Worker errato?',
+  waf_page:'Il server ha restituito una pagina firewall (WAF), non una risposta API',
+  bad_response:'Risposta del server non valida/vuota',prompt_name:'Nome di questo prompt:',
+  prompt_empty:'Testo di sistema vuoto',select_prompt:'Seleziona un prompt',prompt_deleted:'Eliminato',
+  tokens:'Token',chars_n:'{0} caratteri',user_label:'Utente',assistant_label:'Assistente',
+  preset_agentrouter_note:'Questo server è dietro un firewall WAF; passa attraverso il proxy CORS (compilato automaticamente). Chiave: agentrouter.org/console/token',
+  sug1:'Scrivi una funzione Python per l\'ordinamento rapido',sug2:'Spiega semplicemente la differenza tra TCP e UDP',
+  sug3:'Scrivi un\'email professionale per il follow-up della riunione',sug4:'Dai 5 idee per post Instagram per un bar'
+}
+};
+/* ---------- i18n helpers ---------- */
+const t=(key,...args)=>{ const d=I18N[state.settings.lang]||I18N.fa; let s=d[key]!==undefined?d[key]:I18N.fa[key]; if(s===undefined)s=key; return args.length?s.replace(/\{(\d+)\}/g,(m,i)=>args[i]!==undefined?args[i]:m):s };
+function applyLang(){
+  const L=LANGUAGES.find(x=>x.code===state.settings.lang)||LANGUAGES[0];
+  document.documentElement.dir=L.dir; document.documentElement.lang=L.code;
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ const k=el.getAttribute('data-i18n'); if(k) el.innerHTML=t(k) });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{ const k=el.getAttribute('data-i18n-ph'); if(k) el.placeholder=t(k) });
+  document.querySelectorAll('[data-i18n-title]').forEach(el=>{ const k=el.getAttribute('data-i18n-title'); if(k) el.title=t(k) });
+  const sel=$('#setLang'); if(sel) sel.value=state.settings.lang;
+  renderSuggestions(); renderProfiles(); renderConvs(); renderChat(); renderPromptLib();
+  const inp=$('#input'); if(inp) inp.placeholder=t('input_ph');
+  $('#modelLabel').textContent=currentModel()||t('model_placeholder');
+  const vn=$('#versionNote'); if(vn) vn.innerHTML=t('version_note',APP_VERSION);
+  const ob=$('#offlineBanner'); if(ob) ob.textContent=t('offline_banner');
+  const csS=$('#csSystem'); if(csS) csS.placeholder=t('cs_system_ph');
+  const dwn=$('#scrollDownBtn'); if(dwn) dwn.title=t('down');
+  const clearBtn=$('#clearAllBtn'); if(clearBtn) clearBtn.textContent=t('clear');
+  const delLockBtn=$('#unlockRemoveBtn'); if(delLockBtn) delLockBtn.textContent=t('remove_lock');
+  const updBtn=$('#reloadModelsBtn'); if(updBtn) updBtn.title=t('reload_models');
+  const csb=$('#chatSettingsBtn'); if(csb) csb.title=t('chat_settings');
+  const mb=$('#modelBtn'); if(mb) mb.title=t('select_model');
+  const sb=$('#sendBtn'); if(sb) sb.title=t('send');
+  const ab=$('#attachBtn'); if(ab) ab.title=t('add_image');
+  const fb=$('#fileBtn'); if(fb) fb.title=t('add_file');
+  const mic=$('#micBtn'); if(mic) mic.title=t('voice_input');
+  const convSearch=$('#convSearch'); if(convSearch) convSearch.placeholder=t('conv_search_ph');
+  const lockReset=$('#lockResetBtn'); if(lockReset) lockReset.textContent=t('forgot_reset');
+  const lockUnlock=$('#lockUnlockBtn'); if(lockUnlock) lockUnlock.textContent=t('unlock');
+  const lockInput=$('#lockInput'); if(lockInput) lockInput.placeholder=t('pass_ph');
+}
+
+let state={
+  profiles:[],
+  activeId:localStorage.getItem(LS.active)||null,
+  convs:loadJSON(LS.convs,[]),
+  settings:loadJSON(LS.settings,{lang:'fa',temperature:0.7,maxTokens:0,topP:1,defaultProxy:DEFAULT_PROXY,proxyToken:'',autoTitle:true,tts:false,trim:0,promptLib:[],gist:{token:'',id:''}}),
+  currentConvId:null, editingProfileId:null, streaming:false, abort:null,
+  attachments:[], convFilter:'', cryptoKey:null, modelFilter:'',
+};
+
+/* ---------- Crypto (optional passphrase lock) ---------- */
+async function deriveKey(pass,saltB64){
+  const enc=new TextEncoder();
+  const salt=saltB64?Uint8Array.from(atob(saltB64),c=>c.charCodeAt(0)):crypto.getRandomValues(new Uint8Array(16));
+  const base=await crypto.subtle.importKey('raw',enc.encode(pass),'PBKDF2',false,['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:120000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+  return {key,salt:btoa(String.fromCharCode(...salt))};
+}
+async function encJSON(obj){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const data=new TextEncoder().encode(JSON.stringify(obj));
+  const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},state.cryptoKey.key,data);
+  return {iv:btoa(String.fromCharCode(...iv)),ct:btoa(String.fromCharCode(...new Uint8Array(ct))),salt:state.cryptoKey.salt};
+}
+async function decJSON(v,key){
+  const iv=Uint8Array.from(atob(v.iv),c=>c.charCodeAt(0));
+  const ct=Uint8Array.from(atob(v.ct),c=>c.charCodeAt(0));
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct);
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+async function persistProfiles(){
+  if(state.cryptoKey){ setJSON(LS.vault, await encJSON(state.profiles)); localStorage.removeItem(LS.profiles); }
+  else { setJSON(LS.profiles,state.profiles); localStorage.removeItem(LS.vault); }
+}
+
+/* ---------- API ---------- */
+function baseV1(url){ url=url.trim().replace(/\/+$/,''); return url.replace(/\/v1$/,'') }
+function apiUrl(p,path){ return baseV1(p.url)+path }
+function endpoint(p,path){
+  const t=apiUrl(p,path);
+  if(p&&p.proxy){
+    const px=p.proxy.trim();
+    if(px.includes('{url}')) return px.replace('{url}',encodeURIComponent(t));
+    if(px.endsWith('=')) return px+encodeURIComponent(t);                                  // ...?url=
+    if(px.includes('?')) return px+(px.endsWith('&')||px.endsWith('?')?'':'&')+'url='+encodeURIComponent(t);
+    return px.replace(/\/+$/,'')+'/?url='+encodeURIComponent(t);                            // آدرس خام Worker → ?url= اضافه می‌شود
+  }
+  return t;
+}
+function authHeaders(p,extra){ const h=Object.assign({Authorization:'Bearer '+p.key},extra||{}); if(p&&p.proxy&&state.settings.proxyToken) h['X-Proxy-Token']=state.settings.proxyToken; return h }
+
+async function fetchModels(p){
+  let r;
+  try{ r=await fetch(endpoint(p,'/v1/models'),{headers:authHeaders(p),signal:timeoutSignal(15000)}); }
+  catch(e){ if(e.name==='AbortError') throw new Error(t('timeout_err')); throw new Error(t('net_err')); }
+  if(!r.ok) throw new Error('HTTP '+r.status+(r.status===401?t('invalid_key'):'')+(r.status===403?t('wrong_worker_tok'):''));
+  const ct=r.headers.get('content-type')||''; const body=await r.text();
+  if(ct.includes('text/html')||/^\s*</.test(body)) throw new Error(t('waf_page'));
+  let j; try{ j=JSON.parse(body) }catch{ throw new Error(t('bad_response')) }
+  return (j.data||[]).map(m=>m.id).sort();
+}
+async function fetchBalance(p){
+  const g=async path=>{ try{ const r=await fetch(endpoint(p,path),{headers:authHeaders(p),signal:timeoutSignal(12000)}); if(!r.ok) return null; const ct=r.headers.get('content-type')||''; if(!ct.includes('json')) return null; return await r.json(); }catch{ return null } };
+  let sub=await g('/dashboard/billing/subscription')||await g('/v1/dashboard/billing/subscription'); if(!sub) return null;
+  const total=Number(sub.hard_limit_usd ?? sub.soft_limit_usd ?? 0); let used=0;
+  const u=await g('/dashboard/billing/usage')||await g('/v1/dashboard/billing/usage'); if(u) used=Number(u.total_usage||0)/100;
+  return {total,used,remaining:total-used};
+}
+async function streamChat(p,body,onDelta,onUsage,signal){
+  const r=await fetch(endpoint(p,'/v1/chat/completions'),{method:'POST',headers:authHeaders(p,{'Content-Type':'application/json'}),body:JSON.stringify(body),signal});
+  if(!r.ok){ let msg='HTTP '+r.status; try{ const e=await r.json(); msg=e.error?.message||e.message||msg }catch{} throw new Error(msg); }
+  if((r.headers.get('content-type')||'').includes('text/html')) throw new Error(t('waf_page'));
+  const reader=r.body.getReader(),dec=new TextDecoder(); let buf='';
+  while(true){ const {value,done}=await reader.read(); if(done) break; buf+=dec.decode(value,{stream:true});
+    const lines=buf.split('\n'); buf=lines.pop();
+    for(const line of lines){ const t=line.trim(); if(!t.startsWith('data:')) continue; const data=t.slice(5).trim(); if(data==='[DONE]') return;
+      try{ const j=JSON.parse(data); const dl=j.choices?.[0]?.delta||{}; const c=dl.content, rc=dl.reasoning_content||dl.reasoning; if(c||rc) onDelta(c||'',rc||''); if(j.usage) onUsage&&onUsage(j.usage); }catch{} } }
+}
+async function chatOnce(p,model,messages){
+  const r=await fetch(endpoint(p,'/v1/chat/completions'),{method:'POST',headers:authHeaders(p,{'Content-Type':'application/json'}),body:JSON.stringify({model,messages,stream:false}),signal:timeoutSignal(30000)});
+  if(!r.ok) throw new Error('HTTP '+r.status); const j=await r.json(); return j.choices?.[0]?.message?.content||'';
+}
+
+/* ---------- Markdown / reasoning ---------- */
+function fallbackMd(src){ return '<p>'+esc(src).replace(/\n/g,'<br>')+'</p>' }
+function splitThink(text){
+  let reason=''; const out=text.replace(/<think>([\s\S]*?)<\/think>/gi,(m,r)=>{reason+=r;return ''});
+  return {content:out, think:reason.trim()};
+}
+function renderMarkdown(text){
+  let html; try{ html=window.marked?marked.parse(text,{breaks:true,gfm:true}):fallbackMd(text) }catch{ html=fallbackMd(text) }
+  if(window.DOMPurify) html=DOMPurify.sanitize(html,{ADD_ATTR:['target']});
+  return html;
+}
+function enhanceBubble(scope){
+  scope.querySelectorAll('pre code').forEach(b=>{ if(window.hljs&&!b.dataset.hl){ try{hljs.highlightElement(b)}catch{} b.dataset.hl=1 } });
+  scope.querySelectorAll('.bubble pre').forEach(pre=>{ if(pre.querySelector('.copy-code'))return; const btn=document.createElement('button'); btn.className='copy-code'; btn.textContent=t('copy'); btn.onclick=()=>navigator.clipboard.writeText(pre.querySelector('code').innerText).then(()=>{btn.textContent='✓';setTimeout(()=>btn.textContent=t('copy'),1200)}); pre.appendChild(btn); });
+  if(window.renderMathInElement){ try{ renderMathInElement(scope,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false}) }catch{} }
+}
+function msgText(c){ return Array.isArray(c)?c.filter(x=>x.type==='text').map(x=>x.text).join('\n'):(c||'') }
+function msgImages(c){ return Array.isArray(c)?c.filter(x=>x.type==='image_url').map(x=>x.image_url.url):[] }
+
+/* ---------- Helpers ---------- */
+function activeProfile(){ return state.profiles.find(p=>p.id===state.activeId)||null }
+function currentConv(){ return state.convs.find(c=>c.id===state.currentConvId)||null }
+function currentModel(){ const c=currentConv(); if(c&&c.model) return c.model; const p=activeProfile(); return p?localStorage.getItem(LS.model+p.id)||'':'' }
+
+/* ---------- Render: profiles ---------- */
+function renderProfiles(){
+  const el=$('#profileList'); el.innerHTML='';
+  if(!state.profiles.length){ el.innerHTML='<div class="muted-note" style="padding:4px 6px">'+t('no_service_yet')+'</div>'; return }
+  state.profiles.forEach(p=>{ const d=document.createElement('div'); d.className='profile'+(p.id===state.activeId?' active':'');
+    d.innerHTML=`<div class="pname" title="${esc(p.name)}">${esc(p.name)}</div><div class="purl" dir="ltr">${esc(baseV1(p.url))}</div><div class="balance-chip" data-bal="${p.id}"></div><div class="pacts"><button class="icon-btn" data-edit title="${t('edit')}">✎</button><button class="icon-btn" data-del title="${t('delete')}">🗑</button></div>`;
+    d.querySelector('.pname').onclick=()=>selectProfile(p.id); d.querySelector('.purl').onclick=()=>selectProfile(p.id);
+    d.querySelector('[data-edit]').onclick=()=>openProfileModal(p.id); d.querySelector('[data-del]').onclick=()=>delProfile(p.id); el.appendChild(d); });
+}
+function renderConvs(){
+  const el=$('#convList'); el.innerHTML='';
+  let list=state.convs.filter(c=>c.profileId===state.activeId);
+  const q=state.convFilter.trim().toLowerCase();
+  if(q) list=list.filter(c=>(c.title||'').toLowerCase().includes(q)||c.messages.some(m=>msgText(m.content).toLowerCase().includes(q)));
+  if(!list.length){ el.innerHTML='<div class="muted-note" style="padding:4px 6px">'+(q?t('no_results'):t('no_convs'))+'</div>'; return }
+  list.slice().reverse().forEach(c=>{ const d=document.createElement('div'); d.className='conv'+(c.id===state.currentConvId?' active':'');
+    d.innerHTML=`<span class="ctitle">${esc(c.title||t('new_conv'))}</span><span class="cacts"><span class="ci" data-ren title="${t('rename')}">✎</span><span class="ci" data-exp title="${t('export_md')}">⬇</span><span class="ci" data-del title="${t('delete')}">🗑</span></span>`;
+    d.querySelector('.ctitle').onclick=()=>openConv(c.id); d.querySelector('[data-ren]').onclick=e=>{e.stopPropagation();renameConv(c.id)}; d.querySelector('[data-exp]').onclick=e=>{e.stopPropagation();exportConv(c.id)}; d.querySelector('[data-del]').onclick=e=>{e.stopPropagation();delConv(c.id)}; el.appendChild(d); });
+}
+
+/* ---------- Render: chat ---------- */
+function atBottom(){ const c=$('#chat'); return c.scrollHeight-c.scrollTop-c.clientHeight<60 }
+function scrollDown(force){ const c=$('#chat'); if(force||atBottom()) c.scrollTop=c.scrollHeight }
+function renderChat(){
+  const conv=currentConv(); const inner=$('#chatInner'),welcome=$('#welcome');
+  if(!conv||!conv.messages.length){ if(!state.profiles.length||!conv){ welcome.style.display='block'; inner.style.display='none'; return }
+    welcome.style.display='none'; inner.style.display='flex'; inner.innerHTML='<div class="muted-note" style="text-align:center;margin:10vh 0">'+t('send_first')+'</div>'; return; }
+  welcome.style.display='none'; inner.style.display='flex'; inner.innerHTML='';
+  conv.messages.forEach((m,i)=>inner.appendChild(buildMsg(conv,m,i)));
+  enhanceBubble(inner); scrollDown(true);
+}
+function buildMsg(conv,m,i){
+  const d=document.createElement('div'); d.className='msg '+m.role; const isLast=i===conv.messages.length-1;
+  const imgs=msgImages(m.content).map(u=>`<img class="att" src="${u}">`).join('');
+  const sp=splitThink(msgText(m.content)); const reasoning=m.reasoning||sp.think;
+  const reasonHtml=reasoning?`<details class="reason"><summary>${t('reasoning')}</summary><div class="rbody">${esc(reasoning)}</div></details>`:'';
+  let acts=m.role==='user'?`<button data-edit>${t('edit')}</button><button data-copy>${t('copy')}</button><button data-del>${t('delete')}</button>`
+    :`<button data-copy>${t('copy')}</button>${state.settings.tts?'<button data-tts>🔊</button>':''}${isLast?'<button data-regen>'+t('regenerate')+'</button>':''}<button data-del>${t('delete')}</button>`;
+  const metaBits=[]; if(m.ts) metaBits.push('<span class="usage">'+fmtTime(m.ts)+'</span>');
+  if(m.usage&&m.usage.total_tokens) metaBits.push('<span class="usage">🔢 '+m.usage.total_tokens+' '+t('tokens')+'</span>');
+  if(m.tps) metaBits.push('<span class="usage">⚡ '+m.tps+' tok/s</span>');
+  d.innerHTML=`<div class="av">${m.role==='user'?t('you'):'◆'}</div><div class="col"><div class="bubble">${reasonHtml}${imgs}${renderMarkdown(sp.content)}</div><div class="msg-meta"><div class="msg-acts">${acts}</div>${metaBits.join('')}</div></div>`;
+  const bubble=d.querySelector('.bubble');
+  d.querySelector('[data-copy]').onclick=()=>navigator.clipboard.writeText(msgText(m.content)).then(()=>toast(t('copied')));
+  d.querySelector('[data-del]').onclick=()=>{ conv.messages.splice(i,1); save(); renderChat() };
+  const rg=d.querySelector('[data-regen]'); if(rg) rg.onclick=()=>regenerate(i);
+  const ed=d.querySelector('[data-edit]'); if(ed) ed.onclick=()=>startEdit(conv,i,bubble);
+  const tt=d.querySelector('[data-tts]'); if(tt) tt.onclick=()=>speak(sp.content);
+  return d;
+}
+function startEdit(conv,i,bubble){
+  const ta=document.createElement('textarea'); ta.className='edit-area'; ta.value=msgText(conv.messages[i].content);
+  bubble.replaceWith(ta); ta.style.height=ta.scrollHeight+'px'; ta.focus();
+  ta.addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); const v=ta.value.trim(); if(v){ conv.messages[i].content=v; conv.messages.splice(i+1); runAssistant(conv) } } if(e.key==='Escape') renderChat(); });
+}
+function speak(text){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang=(LANGUAGES.find(x=>x.code===state.settings.lang)||LANGUAGES[0]).loc; speechSynthesis.speak(u) }catch{ toast(t('tts_unsupported')) } }
+
+/* ---------- Models picker ---------- */
+function renderModelLabel(){ const m=currentModel(); $('#modelLabel').textContent=m||t('model_placeholder') }
+function openModelPicker(){ const p=activeProfile(); if(!p){ toast(t('select_service')); return } if(!p.models){ loadModels(p).then(()=>{renderModelList()}); } $('#mpSearch').value=state.modelFilter=''; $('#modelModal').classList.add('show'); renderModelList(); setTimeout(()=>$('#mpSearch').focus(),50); }
+function renderModelList(){
+  const p=activeProfile(); const el=$('#mpList'); el.innerHTML=''; if(!p||!p.models){ el.innerHTML='<div class="muted-note">'+t('loading_models')+'</div>'; return }
+  const q=state.modelFilter.toLowerCase(); const cur=currentModel();
+  const favs=(p.favModels||[]).filter(m=>p.models.includes(m));
+  const recents=(p.recentModels||[]).filter(m=>p.models.includes(m)&&!favs.includes(m));
+  const all=p.models.filter(m=>m.toLowerCase().includes(q));
+  const add=(m)=>{ const it=document.createElement('div'); it.className='mp-item'+(m===cur?' sel':''); const fav=(p.favModels||[]).includes(m);
+    it.innerHTML=`<span>${esc(m)}</span><span class="star ${fav?'on':''}">${fav?'★':'☆'}</span>`;
+    it.querySelector('span').onclick=()=>pickModel(m); it.firstChild.onclick=()=>pickModel(m);
+    it.querySelector('.star').onclick=e=>{ e.stopPropagation(); toggleFav(m) }; return it; };
+  if(!q && favs.length){ const h=document.createElement('div'); h.className='mp-group'; h.textContent=t('favorites'); el.appendChild(h); favs.forEach(m=>el.appendChild(add(m))); }
+  if(!q && recents.length){ const h=document.createElement('div'); h.className='mp-group'; h.textContent=t('recent'); el.appendChild(h); recents.forEach(m=>el.appendChild(add(m))); }
+  const h2=document.createElement('div'); h2.className='mp-group'; h2.textContent=t('all_n',all.length); el.appendChild(h2);
+  all.forEach(m=>el.appendChild(add(m)));
+}
+function pickModel(m){ const p=activeProfile(); if(!p) return; localStorage.setItem(LS.model+p.id,m); p.recentModels=[m,...(p.recentModels||[]).filter(x=>x!==m)].slice(0,6); persistProfiles(); const c=currentConv(); if(c){ c.model=m; save() } renderModelLabel(); $('#modelModal').classList.remove('show'); }
+function toggleFav(m){ const p=activeProfile(); if(!p) return; p.favModels=p.favModels||[]; if(p.favModels.includes(m)) p.favModels=p.favModels.filter(x=>x!==m); else p.favModels.push(m); persistProfiles(); renderModelList(); }
+
+function renderTopInfo(){ const p=activeProfile(); $('#topInfo').innerHTML=p?`<b>${esc(p.name)}</b>`:''; if(p) updateBalances(); }
+async function updateBalances(){ for(const p of state.profiles){ fetchBalance(p).then(b=>{ const chip=document.querySelector(`[data-bal="${p.id}"]`); if(b&&chip) chip.textContent=t('balance_of','$'+b.remaining.toFixed(3),'$'+b.total.toFixed(2)); if(p.id===state.activeId&&b) $('#topInfo').innerHTML=`<b>${esc(p.name)}</b> · `+t('balance_of','$'+b.remaining.toFixed(3),'$'+b.total.toFixed(2)); }).catch(()=>{}); } }
+
+/* ---------- Profile actions ---------- */
+function fillPresetSelect(sel0){ const sel=$('#fPreset'); sel.innerHTML='<option value="">'+t('preset_ph')+'</option>'; PRESETS.forEach((pr,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=pr.name+' ('+pr.url+')'; if(pr.url===sel0) o.selected=true; sel.appendChild(o) }); const o2=document.createElement('option'); o2.value='custom'; o2.textContent=t('custom_addr'); sel.appendChild(o2); }
+function openProfileModal(id){ state.editingProfileId=id||null; $('#modalTitle').textContent=id?t('edit_service'):t('add_service_m'); $('#testResult').className='test-result'; const p=id?state.profiles.find(x=>x.id===id):null; fillPresetSelect(p?baseV1(p.url):''); $('#fName').value=p?p.name:''; $('#fUrl').value=p?p.url:''; $('#fKey').value=p?p.key:''; $('#fProxy').value=p?(p.proxy||''):''; $('#profileModal').classList.add('show'); setTimeout(()=>{ (p?$('#fKey'):$('#fPreset')).focus() },50); }
+function closeModal(){ $('#profileModal').classList.remove('show') }
+async function saveProfile(){ const name=$('#fName').value.trim()||t('service'),url=$('#fUrl').value.trim(),key=$('#fKey').value.trim(),proxy=$('#fProxy').value.trim(); if(!url||!key){ toast(t('url_key_required')); return }
+  if(state.editingProfileId){ const p=state.profiles.find(x=>x.id===state.editingProfileId); Object.assign(p,{name,url,key,proxy}); delete p.models; } else state.profiles.push({id:uid(),name,url,key,proxy,favModels:[],recentModels:[]});
+  await persistProfiles(); closeModal(); renderProfiles(); await selectProfile(state.editingProfileId||state.profiles[state.profiles.length-1].id); toast(t('saved')); }
+function delProfile(id){ if(!confirm(t('del_profile_confirm'))) return; state.profiles=state.profiles.filter(p=>p.id!==id); state.convs=state.convs.filter(c=>c.profileId!==id); persistProfiles(); setJSON(LS.convs,state.convs); if(state.activeId===id){ state.activeId=state.profiles[0]?.id||null; localStorage.setItem(LS.active,state.activeId||'') } renderProfiles(); if(state.activeId) selectProfile(state.activeId); else { state.currentConvId=null; renderConvs(); renderModelLabel(); renderTopInfo(); renderChat() } }
+async function testConnection(){ const url=$('#fUrl').value.trim(),key=$('#fKey').value.trim(),proxy=$('#fProxy').value.trim(),res=$('#testResult'); if(!url||!key){ res.className='test-result err'; res.textContent=t('url_key_needed'); return } res.className='test-result'; res.style.display='block'; res.textContent=t('testing'); try{ const models=await fetchModels({url,key,proxy}); res.className='test-result ok'; res.textContent=t('conn_ok',models.length); }catch(e){ res.className='test-result err'; res.textContent=t('failed')+e.message; } }
+async function selectProfile(id){ state.activeId=id; localStorage.setItem(LS.active,id); const p=activeProfile(); renderProfiles(); if(p&&!p.models) await loadModels(p); renderModelLabel(); renderTopInfo(); const list=state.convs.filter(c=>c.profileId===id); state.currentConvId=list.length?list[list.length-1].id:null; renderConvs(); renderChat(); syncChatSettings(); }
+async function loadModels(p){ try{ p.models=await fetchModels(p); persistProfiles(); }catch(e){ toast(t('models_error')+e.message); p.models=[]; } }
+
+/* ---------- Conversations ---------- */
+function newChat(){ if(!state.activeId){ toast(t('select_service')); return } const s=state.settings; const c={id:uid(),profileId:state.activeId,title:'',model:currentModel(),messages:[],system:'',temperature:s.temperature,maxTokens:s.maxTokens,topP:s.topP}; state.convs.push(c); save(); state.currentConvId=c.id; renderConvs(); renderChat(); syncChatSettings(); $('#input').focus(); closeSidebar(); }
+function openConv(id){ state.currentConvId=id; renderModelLabel(); renderConvs(); renderChat(); syncChatSettings(); closeSidebar(); }
+function delConv(id){ state.convs=state.convs.filter(c=>c.id!==id); save(); if(state.currentConvId===id) state.currentConvId=null; renderConvs(); renderChat() }
+function renameConv(id){ const c=state.convs.find(x=>x.id===id); if(!c) return; const v=prompt(t('rename_prompt'),c.title||''); if(v!==null){ c.title=v.trim()||c.title; save(); renderConvs() } }
+function save(){ setJSON(LS.convs,state.convs) }
+
+/* ---------- Send / stream ---------- */
+function buildApiMessages(conv){ const arr=[]; const sys=(conv.system||'').trim(); if(sys) arr.push({role:'system',content:sys}); let msgs=conv.messages.map(m=>({role:m.role,content:m.content})); const n=state.settings.trim; if(n&&n>0&&msgs.length>n) msgs=msgs.slice(-n); return arr.concat(msgs); }
+async function runAssistant(conv){
+  const p=activeProfile(); const model=currentModel(); if(!p||!model){ toast(t('no_svc_model')); return } conv.model=model;
+  conv.messages.push({role:'assistant',content:'',ts:Date.now()}); renderChat();
+  const inner=$('#chatInner'); const aEl=inner.lastElementChild; const bubble=aEl.querySelector('.bubble'); bubble.classList.add('cursor');
+  state.streaming=true; state.abort=new AbortController(); setSendState(true);
+  const body={model,messages:buildApiMessages({...conv,messages:conv.messages.slice(0,-1)}),stream:true,stream_options:{include_usage:true}};
+  if(conv.temperature!=null) body.temperature=conv.temperature; if(conv.topP!=null&&conv.topP<1) body.top_p=conv.topP; if(conv.maxTokens) body.max_tokens=conv.maxTokens;
+  let acc='',reason='',t0=performance.now(); const last=()=>conv.messages[conv.messages.length-1];
+  const repaint=()=>{ const sp=splitThink(acc); const r=reason||sp.think; bubble.innerHTML=(r?`<details class="reason" open><summary>${t('reasoning')}</summary><div class="rbody">${esc(r)}</div></details>`:'')+renderMarkdown(sp.content); scrollDown(); };
+  try{ await streamChat(p,body,(c,rc)=>{ if(rc) reason+=rc; if(c) acc+=c; last().content=acc; if(reason) last().reasoning=reason; repaint(); },(u)=>{ last().usage=u; },state.abort.signal); }
+  catch(e){ if(e.name!=='AbortError'){ acc+=(acc?'\n\n':'')+t('error_prefix')+e.message; last().content=acc; } }
+  const secs=(performance.now()-t0)/1000; const toks=last().usage?.completion_tokens|| Math.round(acc.length/4); if(secs>0.5&&toks) last().tps=Math.round(toks/secs);
+  bubble.classList.remove('cursor'); state.streaming=false; setSendState(false); save(); renderChat(); renderConvs(); updateBalances();
+  maybeAutoTitle(conv);
+}
+async function maybeAutoTitle(conv){ if(!state.settings.autoTitle) return; const userMsgs=conv.messages.filter(m=>m.role==='user'); if(userMsgs.length!==1) return; const p=activeProfile(); if(!p) return;
+  try{ const title=await chatOnce(p,conv.model,[{role:'user',content:t('title_req',(LANGUAGES.find(x=>x.code===state.settings.lang)||LANGUAGES[0]).name)+msgText(userMsgs[0].content).slice(0,300)}]); const clean=title.trim().replace(/^["'«»]|["'«»]$/g,'').split('\n')[0].slice(0,50); if(clean){ conv.title=clean; save(); renderConvs(); } }catch{}
+}
+async function send(){ if(state.streaming){ state.abort?.abort(); return } const text=$('#input').value.trim(); const p=activeProfile(); if(!p){ toast(t('select_service')); return } if(!text&&!state.attachments.length) return; if(!currentModel()){ toast(t('pick_model')); return } if(!navigator.onLine){ toast(t('offline_msg')); return }
+  let conv=currentConv(); if(!conv){ const s=state.settings; conv={id:uid(),profileId:p.id,title:'',model:currentModel(),messages:[],system:'',temperature:s.temperature,maxTokens:s.maxTokens,topP:s.topP}; state.convs.push(conv); state.currentConvId=conv.id; syncChatSettings(); }
+  if(!conv.title) conv.title=(text||'پیام').slice(0,40);
+  const textFiles=state.attachments.filter(a=>a.type==='text'); const imgs=state.attachments.filter(a=>a.type==='image');
+  let textPart=text; textFiles.forEach(f=>{ textPart+=`\n\n[فایل: ${f.name}]\n${f.text}` });
+  let content; if(imgs.length){ content=[]; if(textPart) content.push({type:'text',text:textPart}); imgs.forEach(a=>content.push({type:'image_url',image_url:{url:a.dataUrl}})); } else content=textPart;
+  conv.messages.push({role:'user',content,ts:Date.now()});
+  $('#input').value=''; state.attachments=[]; renderAttachments(); autoGrow(); updateCharCount(); renderConvs();
+  await runAssistant(conv);
+}
+function regenerate(i){ const conv=currentConv(); if(!conv) return; conv.messages.splice(i); runAssistant(conv); }
+function setSendState(on){ $('#sendBtn').textContent=on?'■':'➤'; $('#sendBtn').title=on?t('stop'):t('send'); }
+
+/* ---------- Attachments ---------- */
+function addImages(files){ [...files].forEach(f=>{ if(!f.type.startsWith('image/'))return; const r=new FileReader(); r.onload=()=>{ state.attachments.push({type:'image',dataUrl:r.result}); renderAttachments(); }; r.readAsDataURL(f); }); }
+async function addDocs(files){ for(const f of [...files]){ try{ if(f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf')){ const txt=await pdfText(f); state.attachments.push({type:'text',name:f.name,text:txt}); } else { const txt=await f.text(); state.attachments.push({type:'text',name:f.name,text:txt.slice(0,20000)}); } renderAttachments(); }catch(e){ toast(t('file_error')+f.name) } } }
+async function pdfText(file){ if(!window.pdfjsLib) throw new Error('pdfjs'); pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js'; const buf=await file.arrayBuffer(); const pdf=await pdfjsLib.getDocument({data:buf}).promise; let out=''; const n=Math.min(pdf.numPages,30); for(let i=1;i<=n;i++){ const page=await pdf.getPage(i); const tc=await page.getTextContent(); out+=tc.items.map(x=>x.str).join(' ')+'\n'; } return out.slice(0,30000); }
+function renderAttachments(){ const row=$('#attachRow'); row.innerHTML=''; if(!state.attachments.length){ row.style.display='none'; return } row.style.display='flex';
+  state.attachments.forEach((a,i)=>{ let d; if(a.type==='image'){ d=document.createElement('div'); d.className='att-thumb'; d.innerHTML=`<img src="${a.dataUrl}"><button class="x">✕</button>`; } else { d=document.createElement('div'); d.className='att-file'; d.innerHTML=`<span>📄 ${esc(a.name)}</span><button class="x">✕</button>`; } d.querySelector('.x').onclick=()=>{ state.attachments.splice(i,1); renderAttachments() }; row.appendChild(d); }); }
+
+/* ---------- Voice input ---------- */
+let recog=null;
+function toggleMic(){ const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR){ toast(t('mic_unsupported')); return } if(recog){ recog.stop(); return } recog=new SR(); recog.lang=(LANGUAGES.find(x=>x.code===state.settings.lang)||LANGUAGES[0]).loc; recog.interimResults=true; recog.continuous=false; $('#micBtn').classList.add('rec'); let base=$('#input').value;
+  recog.onresult=e=>{ let t=''; for(let i=e.resultIndex;i<e.results.length;i++) t+=e.results[i][0].transcript; $('#input').value=(base?base+' ':'')+t; autoGrow(); updateCharCount(); };
+  recog.onend=()=>{ $('#micBtn').classList.remove('rec'); recog=null; }; recog.onerror=()=>{ $('#micBtn').classList.remove('rec'); recog=null; }; recog.start(); }
+
+/* ---------- Chat settings drawer ---------- */
+function syncChatSettings(){ const c=currentConv(); const s=state.settings; const sys=c?c.system||'':'',t=c?c.temperature:s.temperature,mx=c?c.maxTokens:s.maxTokens,tp=c?c.topP:s.topP; $('#csSystem').value=sys; $('#csTemp').value=t; $('#csTempVal').textContent=t; $('#csMax').value=mx||0; $('#csTopP').value=tp; $('#csTopPVal').textContent=tp; renderPromptLib(); }
+function applyChatSettings(){ const c=currentConv(); const t=parseFloat($('#csTemp').value),mx=parseInt($('#csMax').value)||0,tp=parseFloat($('#csTopP').value),sys=$('#csSystem').value; $('#csTempVal').textContent=t; $('#csTopPVal').textContent=tp; if(c){ c.system=sys; c.temperature=t; c.maxTokens=mx; c.topP=tp; save(); } state.settings.temperature=t; state.settings.maxTokens=mx; state.settings.topP=tp; setJSON(LS.settings,state.settings); }
+function renderPromptLib(){ const sel=$('#csPromptLib'); sel.innerHTML='<option value="">'+t('prompt_lib')+'</option>'; (state.settings.promptLib||[]).forEach((p,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=p.name; sel.appendChild(o); }); }
+function savePromptToLib(){ const text=$('#csSystem').value.trim(); if(!text){ toast(t('prompt_empty')); return } const name=prompt(t('prompt_name'),''); if(!name) return; state.settings.promptLib=state.settings.promptLib||[]; state.settings.promptLib.push({name:name.trim(),text}); setJSON(LS.settings,state.settings); renderPromptLib(); toast(t('saved')); }
+function delPromptFromLib(){ const i=$('#csPromptLib').value; if(i===''){ toast(t('select_prompt')); return } state.settings.promptLib.splice(Number(i),1); setJSON(LS.settings,state.settings); renderPromptLib(); toast(t('prompt_deleted')); }
+
+/* ---------- Export / Backup / Sync ---------- */
+function download(fn,text,type){ const b=new Blob([text],{type:type||'text/plain;charset=utf-8'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=fn; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); }
+function exportConv(id){ const c=state.convs.find(x=>x.id===id); if(!c) return; const prof=state.profiles.find(p=>p.id===c.profileId); let md='# '+(c.title||t('new_conv'))+'\n\n> '+(prof?prof.name:'-')+' · '+(c.model||'-')+'\n\n'; if(c.system) md+='**System:** '+c.system+'\n\n'; c.messages.forEach(m=>{ md+='**'+(m.role==='user'?t('user_label'):t('assistant_label'))+':**\n\n'+msgText(m.content)+'\n\n---\n\n'; }); const safe=(c.title||'chat').replace(/[^\w؀-ۿ\- ]/g,'').slice(0,40)||'chat'; download(safe+'.md',md,'text/markdown;charset=utf-8'); }
+function backupObject(){ return {app:'AnyAPI Chat',version:APP_VERSION,exportedAt:new Date().toISOString(),profiles:state.profiles,convs:state.convs,settings:state.settings}; }
+function exportAll(){ download('newapi-backup-'+new Date().toISOString().slice(0,10)+'.json',JSON.stringify(backupObject(),null,2),'application/json'); toast(t('backup_dl')); }
+function applyBackup(d){ state.profiles=d.profiles||[]; state.convs=Array.isArray(d.convs)?d.convs:[]; if(d.settings) state.settings=Object.assign(state.settings,d.settings); state.profiles.forEach(p=>delete p.models); persistProfiles(); setJSON(LS.convs,state.convs); setJSON(LS.settings,state.settings); state.activeId=state.profiles[0]?.id||null; localStorage.setItem(LS.active,state.activeId||''); state.currentConvId=null; renderProfiles(); if(state.activeId) selectProfile(state.activeId); else { renderConvs(); renderChat(); renderModelLabel(); renderTopInfo() } }
+function importAll(file){ const r=new FileReader(); r.onload=()=>{ try{ const d=JSON.parse(r.result); if(!Array.isArray(d.profiles)) throw 0; if(!confirm(t('replace_data'))) return; applyBackup(d); closeSettings(); toast(t('restored')); }catch{ toast(t('invalid_file')) } }; r.readAsText(file); }
+function clearAll(){ if(!confirm(t('clear_confirm'))) return; [LS.profiles,LS.vault,LS.active,LS.convs,LS.settings].forEach(k=>localStorage.removeItem(k)); Object.keys(localStorage).filter(k=>k.startsWith(LS.model)).forEach(k=>localStorage.removeItem(k)); state.profiles=[]; state.convs=[]; state.activeId=null; state.currentConvId=null; state.cryptoKey=null; state.settings={lang:state.settings.lang||'fa',temperature:0.7,maxTokens:0,topP:1,defaultProxy:DEFAULT_PROXY,proxyToken:'',autoTitle:true,tts:false,trim:0,promptLib:[],gist:{token:'',id:''}}; closeSettings(); renderProfiles(); renderConvs(); renderModelLabel(); renderTopInfo(); renderChat(); toast(t('cleared')); }
+
+async function gistPush(){ const tok=state.settings.gist.token; if(!tok){ toast(t('gist_token_needed')); return } const files={'newapi-backup.json':{content:JSON.stringify(backupObject(),null,2)}}; try{ let res; if(state.settings.gist.id){ res=await fetch('https://api.github.com/gists/'+state.settings.gist.id,{method:'PATCH',headers:{Authorization:'Bearer '+tok,Accept:'application/vnd.github+json'},body:JSON.stringify({files})}); } else { res=await fetch('https://api.github.com/gists',{method:'POST',headers:{Authorization:'Bearer '+tok,Accept:'application/vnd.github+json'},body:JSON.stringify({description:'AnyAPI Chat backup',public:false,files})}); } if(!res.ok) throw new Error('HTTP '+res.status); const j=await res.json(); state.settings.gist.id=j.id; setJSON(LS.settings,state.settings); $('#setGistId').value=j.id; toast(t('gist_saved')); }catch(e){ toast(t('gist_error')+e.message) } }
+async function gistPull(){ const tok=state.settings.gist.token,id=state.settings.gist.id; if(!tok||!id){ toast(t('gist_token_id')); return } if(!confirm(t('gist_replace'))) return; try{ const res=await fetch('https://api.github.com/gists/'+id,{headers:{Authorization:'Bearer '+tok,Accept:'application/vnd.github+json'}}); if(!res.ok) throw new Error('HTTP '+res.status); const j=await res.json(); const f=j.files['newapi-backup.json']; if(!f) throw new Error(t('gist_missing')); applyBackup(JSON.parse(f.content)); toast(t('gist_restored')); }catch(e){ toast(t('gist_error')+e.message) } }
+
+/* ---------- Theme / Settings / Lock ---------- */
+function applyTheme(t){ document.documentElement.setAttribute('data-theme',t); localStorage.setItem(LS.theme,t); document.querySelector('meta[name=theme-color]').setAttribute('content',t==='light'?'#ffffff':'#0e1016'); document.querySelectorAll('#themeSeg button').forEach(b=>b.classList.toggle('on',b.dataset.themeVal===t)); const hl=$('#hljsTheme'); if(hl) hl.href='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/'+(t==='light'?'github':'github-dark')+'.min.css'; }
+function syncSettingsUI(){ const s=state.settings; $('#setProxy').value=s.defaultProxy||''; $('#setProxyToken').value=s.proxyToken||''; $('#setTrim').value=s.trim||0; $('#setGistToken').value=s.gist?.token||''; $('#setGistId').value=s.gist?.id||''; document.querySelectorAll('#autoTitleSeg button').forEach(b=>b.classList.toggle('on',(b.dataset.at==='1')===!!s.autoTitle)); document.querySelectorAll('#ttsSeg button').forEach(b=>b.classList.toggle('on',(b.dataset.tts==='1')===!!s.tts)); }
+function openSettings(){ applyTheme(localStorage.getItem(LS.theme)||'dark'); syncSettingsUI(); $('#settingsModal').classList.add('show') }
+function closeSettings(){ $('#settingsModal').classList.remove('show') }
+function updateOnline(){ $('#offlineBanner').classList.toggle('show',!navigator.onLine) }
+async function enableLock(){ const pass=prompt(t('set_pass')); if(!pass) return; state.cryptoKey=await deriveKey(pass); await persistProfiles(); toast(t('lock_enabled')); }
+async function removeLock(){ if(!state.cryptoKey){ toast(t('no_lock_active')); return } state.cryptoKey=null; await persistProfiles(); toast(t('lock_removed')); }
+async function tryUnlock(){ const pass=$('#lockInput').value; if(!pass) return; const vault=loadJSON(LS.vault,null); try{ const {key}=await deriveKey(pass,vault.salt); const profs=await decJSON(vault,key); state.cryptoKey={key,salt:vault.salt}; state.profiles=profs; $('#lockScreen').classList.remove('show'); bootAfterProfiles(); }catch{ $('#lockErr').textContent=t('wrong_pass'); } }
+
+/* ---------- UI plumbing ---------- */
+function autoGrow(){ const t=$('#input'); t.style.height='auto'; t.style.height=Math.min(t.scrollHeight,200)+'px' }
+function updateCharCount(){ const n=$('#input').value.length; $('#charCount').textContent=n?t('chars_n',n):'' }
+function openSidebar(){ $('#sidebar').classList.add('open'); $('#scrim').classList.add('show') }
+function closeSidebar(){ $('#sidebar').classList.remove('open'); $('#scrim').classList.remove('show') }
+function renderSuggestions(){ const el=$('#sugs'); el.innerHTML=''; [t('sug1'),t('sug2'),t('sug3'),t('sug4')].forEach(s=>{ const d=document.createElement('div'); d.className='sug'; d.textContent=s; d.onclick=()=>{ $('#input').value=s; autoGrow(); updateCharCount(); $('#input').focus(); }; el.appendChild(d); }); }
+
+$('#addProfileBtn').onclick=()=>openProfileModal();
+$('#welcomeAddBtn').onclick=()=>openProfileModal();
+$('#closeModalBtn').onclick=closeModal; $('#saveProfileBtn').onclick=saveProfile; $('#testBtn').onclick=testConnection;
+$('#fPreset').onchange=e=>{ const v=e.target.value; if(v==='custom'){ $('#fName').value=''; $('#fUrl').value=''; $('#fProxy').value=''; return } if(v==='') return; const pr=PRESETS[Number(v)]; $('#fName').value=pr.name; $('#fUrl').value=pr.url; $('#fProxy').value=pr.useProxy?(state.settings.defaultProxy||DEFAULT_PROXY):''; const res=$('#testResult'); if(pr.note){ res.className='test-result ok'; res.textContent=t(pr.note) } else res.className='test-result'; $('#fKey').focus(); };
+$('#newChatBtn').onclick=newChat; $('#hambBtn').onclick=openSidebar; $('#scrim').onclick=closeSidebar;
+$('#modelBtn').onclick=openModelPicker; $('#closeModelBtn').onclick=()=>$('#modelModal').classList.remove('show');
+$('#mpSearch').addEventListener('input',e=>{ state.modelFilter=e.target.value; renderModelList(); });
+$('#mpManualBtn').onclick=()=>{ const m=$('#mpManual').value.trim(); if(!m){ toast(t('write_model_name')); return } const p=activeProfile(); if(p){ p.models=Array.from(new Set([...(p.models||[]),m])); persistProfiles(); } pickModel(m); $('#mpManual').value=''; };
+$('#mpManual').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#mpManualBtn').click(); });
+$('#modelModal').addEventListener('click',e=>{ if(e.target.id==='modelModal') $('#modelModal').classList.remove('show') });
+$('#reloadModelsBtn').onclick=async()=>{ const p=activeProfile(); if(p){ await loadModels(p); renderModelLabel(); toast(t('models_updated')) } };
+$('#chatSettingsBtn').onclick=()=>{ const d=$('#chatSettings'); d.classList.toggle('show'); $('#chatSettingsBtn').classList.toggle('on',d.classList.contains('show')); };
+['csSystem','csTemp','csMax','csTopP'].forEach(id=>$('#'+id).addEventListener('input',applyChatSettings));
+$('#csPromptLib').onchange=e=>{ const i=e.target.value; if(i==='')return; $('#csSystem').value=state.settings.promptLib[Number(i)].text; applyChatSettings(); };
+$('#csSavePrompt').onclick=savePromptToLib; $('#csDelPrompt').onclick=delPromptFromLib;
+$('#sendBtn').onclick=send;
+$('#attachBtn').onclick=()=>$('#imgFile').click(); $('#fileBtn').onclick=()=>$('#docFile').click(); $('#micBtn').onclick=toggleMic;
+$('#imgFile').onchange=e=>{ addImages(e.target.files); e.target.value='' }; $('#docFile').onchange=e=>{ addDocs(e.target.files); e.target.value='' };
+$('#convSearch').addEventListener('input',e=>{ state.convFilter=e.target.value; renderConvs(); });
+$('#input').addEventListener('input',()=>{ autoGrow(); updateCharCount(); });
+$('#input').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send() } });
+$('#input').addEventListener('paste',e=>{ const items=e.clipboardData?.items||[]; const imgs=[...items].filter(it=>it.type.startsWith('image/')); if(imgs.length) addImages(imgs.map(it=>it.getAsFile())); });
+$('#chat').addEventListener('scroll',()=>{ $('#scrollDownBtn').classList.toggle('show',!atBottom()); });
+$('#scrollDownBtn').onclick=()=>scrollDown(true);
+$('#settingsBtn').onclick=openSettings; $('#closeSettingsBtn').onclick=closeSettings;
+$('#settingsModal').addEventListener('click',e=>{ if(e.target.id==='settingsModal') closeSettings() });
+$('#profileModal').addEventListener('click',e=>{ if(e.target.id==='profileModal') closeModal() });
+$('#themeSeg').addEventListener('click',e=>{ const b=e.target.closest('button'); if(b) applyTheme(b.dataset.themeVal) });
+$('#autoTitleSeg').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; state.settings.autoTitle=b.dataset.at==='1'; setJSON(LS.settings,state.settings); syncSettingsUI(); });
+$('#ttsSeg').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return; state.settings.tts=b.dataset.tts==='1'; setJSON(LS.settings,state.settings); syncSettingsUI(); renderChat(); });
+$('#setProxy').addEventListener('input',e=>{ state.settings.defaultProxy=e.target.value.trim(); setJSON(LS.settings,state.settings); });
+$('#setProxyToken').addEventListener('input',e=>{ state.settings.proxyToken=e.target.value.trim(); setJSON(LS.settings,state.settings); });
+$('#setTrim').addEventListener('input',e=>{ state.settings.trim=parseInt(e.target.value)||0; setJSON(LS.settings,state.settings); });
+$('#setGistToken').addEventListener('input',e=>{ state.settings.gist.token=e.target.value.trim(); setJSON(LS.settings,state.settings); });
+$('#setGistId').addEventListener('input',e=>{ state.settings.gist.id=e.target.value.trim(); setJSON(LS.settings,state.settings); });
+$('#gistPush').onclick=gistPush; $('#gistPull').onclick=gistPull;
+$('#lockBtn').onclick=enableLock; $('#unlockRemoveBtn').onclick=removeLock;
+$('#lockUnlockBtn').onclick=tryUnlock; $('#lockInput').addEventListener('keydown',e=>{ if(e.key==='Enter') tryUnlock() });
+$('#lockResetBtn').onclick=()=>{ if(confirm(t('enc_confirm'))){ localStorage.removeItem(LS.vault); location.reload(); } };
+$('#exportAllBtn').onclick=exportAll; $('#importAllBtn').onclick=()=>$('#importFile').click(); $('#importFile').onchange=e=>{ if(e.target.files[0]) importAll(e.target.files[0]); e.target.value='' }; $('#clearAllBtn').onclick=clearAll;
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeSettings(); $('#modelModal').classList.remove('show'); } });
+window.addEventListener('online',updateOnline); window.addEventListener('offline',updateOnline);
+
+/* ---------- Init ---------- */
+function bootAfterProfiles(){ renderProfiles(); if(state.activeId&&activeProfile()) selectProfile(state.activeId); else { renderConvs(); renderChat(); renderModelLabel(); renderTopInfo(); } syncChatSettings(); }
+function pickLang(code){ state.settings.lang=code; setJSON(LS.settings,state.settings); $('#langModal').classList.remove('show'); applyLang(); boot(); }
+function boot(){
+  applyTheme(localStorage.getItem(LS.theme)||'dark'); updateOnline(); applyLang(); renderSuggestions();
+  $('#hint').textContent=t('hint');
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+  const vault=loadJSON(LS.vault,null);
+  if(vault){ $('#lockScreen').classList.add('show'); setTimeout(()=>$('#lockInput').focus(),50); }
+  else { state.profiles=loadJSON(LS.profiles,[]); bootAfterProfiles(); }
+}
+function init(){
+  const firstTime=localStorage.getItem(LS.settings)===null;
+  if(state.settings.defaultProxy==null){ state.settings.defaultProxy=DEFAULT_PROXY; }
+  if(!state.settings.gist) state.settings.gist={token:'',id:''};
+  if(!state.settings.lang) state.settings.lang='fa';
+  setJSON(LS.settings,state.settings);
+  const langSel=$('#setLang'); if(langSel){ LANGUAGES.forEach(l=>{ const o=document.createElement('option'); o.value=l.code; o.textContent=l.name; langSel.appendChild(o); }); langSel.value=state.settings.lang; langSel.onchange=e=>{ state.settings.lang=e.target.value||'fa'; setJSON(LS.settings,state.settings); applyLang(); }; }
+  if(firstTime){ const grid=$('#langGrid'); if(grid){ LANGUAGES.forEach(l=>{ const b=document.createElement('button'); b.className='lang-item'; b.textContent=l.name; b.onclick=()=>pickLang(l.code); grid.appendChild(b); }); $('#langModal').classList.add('show'); } return; }
+  boot();
+}
+init();
+</script>
+</body>
+</html>
